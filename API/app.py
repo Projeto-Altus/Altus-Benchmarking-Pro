@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
-from routes.scrape_routes import scrape_bp
-from routes.export_routes import export_bp
+from API.routes.scrape_routes import scrape_bp
+from API.routes.export_routes import export_bp
 
 def create_app():
     app = Flask(__name__)
