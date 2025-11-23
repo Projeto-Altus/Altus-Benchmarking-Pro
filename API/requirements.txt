@@ -4,3 +4,4 @@ pandas
 openpyxl
 playwright
 pydantic
+google-generativeai

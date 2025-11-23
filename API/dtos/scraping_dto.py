@@ -1,6 +1,7 @@
-from pydantic import BaseModel, HttpUrl
-from typing import List
+from typing import List, Optional
+from pydantic import BaseModel
 
 class ScrapeRequest(BaseModel):
-    urls: List[HttpUrl]
+    urls: List[str]
     attributes: List[str]
+    api_key: Optional[str] = None
