@@ -6,20 +6,18 @@ export const useBenchmarking = () => {
   const [downloadLink, setDownloadLink] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [statusMessage, setStatusMessage] = useState('');
 
-  const generateBenchmark = useCallback(async ({ apiKey, urls, attributes }) => {
+  const generateBenchmark = useCallback(async ({ apiKey, urls, attributes, t }) => {
     setLoading(true);
     setError(null);
     setResults(null);
     setDownloadLink(null);
+    setStatusMessage(t.analyzing);
 
     try {
-      if (!urls || urls.length === 0) {
-        throw new Error('A lista de URLs não pode estar vazia.');
-      }
-      if (!apiKey) {
-        throw new Error('A chave da API é obrigatória.');
-      }
+      if (!urls || urls.length === 0) throw new Error('A lista de URLs não pode estar vazia.');
+      if (!apiKey) throw new Error('A chave da API é obrigatória.');
 
       const response = await api.post('/scrape/', {
         api_key: apiKey,
@@ -31,7 +29,8 @@ export const useBenchmarking = () => {
       const data = response.data;
 
       if (data.status === 'success') {
-        setResults(data.data);
+        setResults(data.data || []); 
+        setStatusMessage(t.finished);
         
         if (data.download_link) {
           const baseUrl = api.defaults.baseURL.replace('/api', ''); 
@@ -44,6 +43,7 @@ export const useBenchmarking = () => {
     } catch (err) {
       const message = err.response?.data?.message || err.response?.data?.error || err.message;
       setError(message);
+      setStatusMessage('');
       console.error("Erro no Benchmark:", err);
     } finally {
       setLoading(false);
@@ -54,6 +54,7 @@ export const useBenchmarking = () => {
     setResults(null);
     setDownloadLink(null);
     setError(null);
+    setStatusMessage('');
   };
 
   return {
@@ -62,6 +63,7 @@ export const useBenchmarking = () => {
     results,
     downloadLink,
     loading,
-    error
+    error,
+    statusMessage
   };
 };

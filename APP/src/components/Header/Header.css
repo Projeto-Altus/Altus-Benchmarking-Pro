@@ -1,0 +1,91 @@
+.nav { background: transparent; box-shadow: 0 2px 0 rgba(0,0,0,0.03); }
+
+.nav-inner { 
+  display:flex; align-items:center; 
+  justify-content: space-between; 
+  width: calc(100% - 160px); 
+  margin: 10px auto 0; 
+  height: 68px; 
+  padding: 12px 24px; 
+  background: var(--nav-bg); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.25); 
+  border-radius: 4px; 
+}
+
+.nav-left, .nav-right { display:flex; align-items:center; }
+
+.nav-center-adjusted {
+    flex-grow: 1; 
+    display: flex;
+    justify-content: flex-start; 
+    margin-left: 20px; 
+}
+
+.logo-pill { display:flex; align-items:center; justify-content:center; gap:12px; background: rgba(255,255,255,0.06); padding:10px 20px; border-radius:8px; min-width:100px; }
+.logo-text { color:#ffffff; font-weight:700; font-size:18px; font-family: 'Kokoro', 'Inria Sans', sans-serif; }
+.app-title { color:#fff; font-weight:700; font-size:28px; letter-spacing:1px; font-family: 'Kokoro', 'Inria Sans', sans-serif; }
+
+.instructions-btn { 
+  margin-right: 12px;
+  background: #3b8bd6; 
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.info-icon { font-size: 16px; font-weight: 700; margin-right: 4px; }
+
+.fixed-size-toggle {
+    width: 80px; 
+    justify-content: flex-end;
+    padding: 0 8px; 
+}
+
+.lang-toggle { display:flex; align-items:center; gap:8px; background:transparent; border:none; padding:0; color:#fff; cursor:pointer; }
+.lang-toggle:focus { outline:2px solid rgba(255,255,255,0.15); border-radius:6px; }
+
+.toggle-track { width:46px; height:24px; background:#fff; border-radius:12px; display:inline-block; position:relative; }
+.toggle-thumb { width:18px; height:18px; background:#b3b3b3; border-radius:50%; position:absolute; left:4px; top:3px; transition: all .18s ease; }
+.toggle-track.on { background: #3b8bd6; }
+.toggle-track.on .toggle-thumb { left:24px; background:#fff; }
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: #fff;
+  transition: transform 0.2s ease;
+  margin-left: 12px;
+}
+
+@media (max-width: 980px) {
+  .nav-inner { 
+    width: 95%; 
+    padding: 10px 15px; 
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-inner { 
+    flex-direction: column; 
+    height: auto; 
+    padding: 10px; 
+    gap: 10px; 
+  }
+  .nav-center-adjusted { 
+    order: -1; 
+    margin-left: 0;
+    justify-content: center;
+  }
+  .nav-right { 
+    width: 100%; 
+    justify-content: space-around; 
+  }
+  .app-title { 
+    font-size: 20px; 
+  }
+  .logo-pill { 
+    padding: 8px 16px; 
+  }
+}
