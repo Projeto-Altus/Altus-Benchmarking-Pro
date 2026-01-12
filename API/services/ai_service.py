@@ -22,21 +22,27 @@ class AIService:
             raise InvalidAPIKeyError(f"A chave de API fornecida é inválida para o provedor {provider}.")
 
     @staticmethod
-    def build_prompt(scraped_data: Dict[str, str], attributes: List[str]) -> str:
+    def build_prompt(scraped_data: Dict[str, str], attributes: List[object]) -> str:
+        attrs_formatted = "\n".join([f"- {attr.name} (Peso: {attr.importance}/10)" for attr in attributes])
+        attr_names = ", ".join([attr.name for attr in attributes])
+
         prompt = (
-            "Você é um assistente de inteligência de mercado. "
-            "Analise os textos crus extraídos de páginas web abaixo e extraia as informações solicitadas.\n\n"
-            f"ATRIBUTOS PARA EXTRAIR: {', '.join(attributes)}\n\n"
+            "Você é um assistente especialista em compras e análise técnica. "
+            "Sua tarefa é analisar os dados dos produtos, extrair as informações e ranquear qual é a melhor opção.\n\n"
+            f"--- ATRIBUTOS E PESOS (IMPORTÂNCIA) ---\n"
+            f"{attrs_formatted}\n\n"
             "--- REGRAS DE RESPOSTA ---\n"
-            "1. Retorne APENAS um JSON válido.\n"
-            "2. O formato deve ser uma LISTA de objetos.\n"
-            "3. Cada objeto deve conter 'url_origem' e conter TODOS os atributos solicitados.\n"
-            "4. Se a informação não existir, preencha com 'N/A'.\n"
-            "5. Não utilize blocos de markdown, retorne apenas o texto do JSON puro.\n\n"
+            "1. Retorne APENAS um JSON válido (lista de objetos).\n"
+            "2. Para cada produto, extraia os atributos solicitados.\n"
+            "3. CALCULE UMA NOTA (campo 'pontuacao_final') de 0 a 100 para cada produto, considerando rigorosamente os PESOS definidos acima.\n"
+            "4. Gere um campo 'motivo_escolha' resumindo em 1 frase curta os prós/contras baseados nos pesos.\n"
+            "5. REGRA CRÍTICA PARA PREÇOS/VALORES: Extraia APENAS O NÚMERO (float). Não use 'R$', não use separador de milhar. Use PONTO para decimal. Exemplo: 1599.90 (e não 1.599,90).\n"
+            "6. Se a informação não existir, preencha com 'N/A'.\n"
+            "7. Campos obrigatórios no JSON: 'url_origem', 'nome_produto', 'pontuacao_final', 'motivo_escolha' e os atributos: " + attr_names + "\n\n"
             "--- DADOS DOS SITES ---\n"
         )
         for url, content in scraped_data.items():
-            prompt += f"\n>>> SITE (URL: {url}):\n{content[:50000]}\n"
+            prompt += f"\n>>> SITE (URL: {url}):\n{content[:40000]}\n"
         return prompt
 
     @staticmethod
@@ -72,9 +78,11 @@ class AIService:
 
             data = json.loads(clean_text)
             raw_list = []
+            
             if isinstance(data, dict):
                 if "result" in data: raw_list = data["result"]
                 elif "data" in data: raw_list = data["data"]
+                elif "products" in data: raw_list = data["products"]
                 else: raw_list = [data]
             elif isinstance(data, list):
                 raw_list = data

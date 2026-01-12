@@ -9,7 +9,6 @@ from playwright.async_api import async_playwright, TimeoutError as PlaywrightTim
 from core.config import Config
 from core.exceptions import InvalidURLError, ScrapingTimeoutError
 
-# Controle de Concorrência (Máximo 3 navegadores simultâneos)
 SEMAPHORE = asyncio.Semaphore(3)
 
 class ScraperService:
@@ -32,7 +31,6 @@ class ScraperService:
         if parsed.scheme not in ('http', 'https') or not parsed.netloc:
             raise InvalidURLError(f"Protocolo ou domínio inválido: {url}")
         
-        # Validação flexível: avisa mas não bloqueia se for muito complexa
         if not validators.url(url):
              print(f">>> [AVISO] URL complexa detectada: {url[:30]}...")
 
@@ -45,7 +43,6 @@ class ScraperService:
                 os.makedirs(folder, exist_ok=True)
 
             timestamp = int(time.time())
-            # Limpa caracteres ruins da URL para o nome do arquivo
             safe_tag = "".join([c if c.isalnum() else "_" for c in tag])[-50:]
             filename = f"debug_{timestamp}_{safe_tag}.png"
             path_img = os.path.join(folder, filename)
@@ -67,7 +64,6 @@ class ScraperService:
         current_url = cls.clean_url(url)
         print(f"\n{'='*60}\n[PROCESSO] Iniciando: {current_url}")
         
-        # Chama a validação antes de abrir o navegador
         try:
             cls.validate_url(current_url)
         except InvalidURLError as e:
@@ -130,7 +126,6 @@ class ScraperService:
                     last_error = ScrapingTimeoutError(f"Timeout de {timeout}s")
                 except Exception as e:
                     print(f"[ERRO CRÍTICO] {str(e)}")
-                    # traceback.print_exc() # Descomente se quiser ver o log completo do erro
                     last_error = e
                 finally:
                     if browser:
