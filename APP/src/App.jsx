@@ -7,6 +7,7 @@ import ResultsDisplay from './components/ResultsDisplay/ResultsDisplay';
 import InstructionsModal from './components/InstructionsModal/InstructionsModal';
 import { translations } from './constants/translations';
 import { useBenchmarking } from './hooks/useBenchmarking';
+import { exportConfig, importConfig } from './utils/fileHandler';
 
 function App() {
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'pt');
@@ -43,6 +44,24 @@ function App() {
 
   const toggleLang = () => setLang(prev => prev === 'pt' ? 'en' : 'pt');
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+
+  const handleExport = () => {
+    if (urlList.length === 0 || attrWithImportance.length === 0) {
+      alert(t.errorMessage || 'Configure URLs e atributos antes de exportar');
+      return;
+    }
+    exportConfig(urlList, attrWithImportance);
+  };
+
+  const handleImport = async () => {
+    try {
+      const config = await importConfig();
+      setUrlList(config.urls);
+      setAttrWithImportance(config.attributes);
+    } catch (error) {
+      alert(`Erro ao importar: ${error.message}`);
+    }
+  };
 
   const handleGenerate = () => {
     generateBenchmark({
@@ -90,8 +109,8 @@ function App() {
               </select>
             </div>
             <div className="import-export">
-              <button className="btn small import" disabled={loading}>{t.import}</button>
-              <button className="btn small export" disabled={loading}>{t.export}</button>
+              <button className="btn small import" disabled={loading} onClick={handleImport}>{t.import}</button>
+              <button className="btn small export" disabled={loading} onClick={handleExport}>{t.export}</button>
             </div>
 
             <UrlManager 
