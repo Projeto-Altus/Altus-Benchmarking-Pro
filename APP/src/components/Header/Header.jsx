@@ -1,5 +1,6 @@
 import React from 'react';
 import './Header.css';
+import altusLogo from '../../assets/logo/altusLogo.png';
 
 const Header = ({ t, lang, theme, toggleLang, toggleTheme, onOpenInstructions }) => {
   return (
@@ -7,7 +8,7 @@ const Header = ({ t, lang, theme, toggleLang, toggleTheme, onOpenInstructions })
       <div className="nav-inner">
         <div className="nav-left">
           <div className="logo-pill">
-            <span className="logo-text">Altus</span>
+            <img src={altusLogo} alt="Altus" className="logo-img" />
           </div>
         </div>
         

@@ -14,7 +14,9 @@ function App() {
   const [showInstructions, setShowInstructions] = useState(false);
   const t = translations[lang];
 
-  const [apiKey, setApiKey] = useState('');
+  // --- MUDANÇA AQUI: Carrega do localStorage ---
+  const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
+  
   const [urlList, setUrlList] = useState([]);
   const [attrWithImportance, setAttrWithImportance] = useState([]);
 
@@ -35,6 +37,13 @@ function App() {
   useEffect(() => {
     localStorage.setItem('lang', lang);
   }, [lang]);
+
+  // --- MUDANÇA AQUI: Salva no localStorage quando muda ---
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem('gemini_api_key', apiKey);
+    }
+  }, [apiKey]);
 
   const toggleLang = () => setLang(prev => prev === 'pt' ? 'en' : 'pt');
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -117,7 +126,6 @@ function App() {
       <InstructionsModal 
         isOpen={showInstructions} 
         onClose={() => setShowInstructions(false)} 
-        content={t.instructionsContent}
         t={t}
       />
     </div>
