@@ -74,7 +74,7 @@ body {
 .left-card { min-height: 600px; display:flex; flex-direction:column; justify-content:space-between; }
 .right-card { min-height: 300px; padding:28px 48px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
 
-.left-inner { display:flex; flex-direction:column; gap:30px; }
+.left-inner { display:flex; flex-direction:column; gap:0; }
 .left-footer { margin-top:20px; }
 
 .label { display:block; margin-bottom:8px; font-weight:700; font-size:20px; font-family: 'Kokoro', 'Inria Sans', sans-serif; color: var(--card-text); }
@@ -83,6 +83,44 @@ body {
   width:100%; border:var(--input-border); border-radius:6px; 
   padding:10px 12px; background:var(--input-bg); color: var(--card-text); 
   font-size: 16px;
+}
+
+/* Wrapper para input de API Key com botão de visualizar */
+.api-key-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.api-key-input-wrapper .input-field {
+  padding-right: 40px;
+  margin: 0;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--card-text);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.btn-toggle-password:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.btn-toggle-password:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 select.input-field {
@@ -160,8 +198,47 @@ select.input-field {
 .section .muted { margin-bottom:6px; color: var(--card-text); opacity: 0.7; }
 .section-controls { display:flex; justify-content:flex-end; margin-top:12px; }
 
-.top-row { display:flex; gap:12px; align-items:center; margin-bottom:10px; }
-.import-export { display:flex; gap:8px; margin-bottom:10px; justify-content: flex-end; }
+.top-row { display:flex; gap:12px; align-items:center; margin-bottom:0; }
+.import-export { display:flex; gap:8px; margin:12px 0 0 0; padding:12px 0 0 0; border-top:1px solid rgba(255, 255, 255, 0.08); justify-content: flex-end; }
+
+/* Botão para salvar API Key */
+.btn.primary-btn[title*="salva"] {
+  margin: 8px 0 0 0;
+  width: 100%;
+}
+
+/* Botões lado a lado para salvar e carregar */
+.api-key-buttons {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 0 0;
+}
+
+.api-key-buttons .btn.small {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* Controles para API Key segura */
+.api-key-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.api-key-controls .btn.small {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Adicionar espaço para seções */
+.left-inner > div:nth-child(n+4) {
+  margin-top: 20px;
+}
 
 @media (max-width: 980px) {
   .main-grid { grid-template-columns: 1fr; width: 95%; padding: 0 15px; }
