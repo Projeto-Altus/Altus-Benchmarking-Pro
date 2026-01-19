@@ -3,12 +3,14 @@ import './AttributeManager.css';
 
 const AttributeManager = ({ attributes, setAttributes, loading, t }) => {
   const [input, setInput] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const addAttr = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
     setAttributes([...attributes, { name: trimmed, importance: 5 }]);
     setInput('');
+    setIsOpen(true);
   };
 
   const removeAttr = (index) => setAttributes(attributes.filter((_, i) => i !== index));
@@ -40,28 +42,41 @@ const AttributeManager = ({ attributes, setAttributes, loading, t }) => {
         />
         <button className="btn small primary-btn" onClick={addAttr} disabled={loading}>+</button>
       </div>
-      <div className="muted">{attributes.length} {t.attrsCount}</div>
-      <ul className="list-items">
-        {attributes.map((a, i) => (
-          <li className="list-item attr-item" key={i}>
-            <span className="attr-name">{escapeHtml(a.name)}</span>
-            <div className="importance-control-v2">
-              <input 
-                type="number" 
-                min="1" max="10" 
-                value={a.importance} 
-                onChange={e => handleImportanceChange(i, e.target.value)} 
-                className="importance-number-input"
-                disabled={loading}
-              />
-            </div>
-            <button className="btn small remove-btn" onClick={() => removeAttr(i)} disabled={loading}>✖</button>
-          </li>
-        ))}
-      </ul>
-      <div className="section-controls">
-        <button className="btn small clear" onClick={clearAttrs} disabled={loading}>{t.clearAttrs}</button>
+
+      <div className={`toggle-header ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
+        <span>
+          {isOpen ? 'Ocultar Atributos' : 'Ver Atributos Definidos'}
+          <span className="item-count">{attributes.length}</span>
+        </span>
+        <span className="toggle-icon">▼</span>
       </div>
+
+      {isOpen && attributes.length > 0 && (
+        <ul className="list-items">
+          {attributes.map((a, i) => (
+            <li className="list-item attr-item" key={i}>
+              <span className="attr-name">{escapeHtml(a.name)}</span>
+              <div className="importance-control-v2">
+                <input 
+                  type="number" 
+                  min="1" max="10" 
+                  value={a.importance} 
+                  onChange={e => handleImportanceChange(i, e.target.value)} 
+                  className="importance-number-input"
+                  disabled={loading}
+                />
+              </div>
+              <button className="btn small remove-btn" onClick={() => removeAttr(i)} disabled={loading}>✖</button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {isOpen && attributes.length > 0 && (
+        <div className="section-controls">
+          <button className="btn small clear" onClick={clearAttrs} disabled={loading}>{t.clearAttrs}</button>
+        </div>
+      )}
     </div>
   );
 };

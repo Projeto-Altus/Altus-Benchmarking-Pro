@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
+import '../../App.css';
 
 const UrlManager = ({ urls, setUrls, loading, t }) => {
   const [input, setInput] = useState('');
-
-  const isValidUrl = (url) => {
-    try { new URL(url); return true; } 
-    catch { return false; }
-  };
+  const [isOpen, setIsOpen] = useState(false);
 
   const addUrl = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    if (!isValidUrl(trimmed)) {
-      alert('URL inválida!');
-      return;
-    }
-    setUrls([...urls, trimmed]);
+    if (!input.trim()) return;
+    setUrls([...urls, input.trim()]);
     setInput('');
+    setIsOpen(true);
   };
 
-  const removeUrl = (index) => setUrls(urls.filter((_, i) => i !== index));
-  const clearUrls = () => setUrls([]);
+  const removeUrl = (index) => {
+    setUrls(urls.filter((_, i) => i !== index));
+  };
 
-  const escapeHtml = (text) => String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+  const clearUrls = () => setUrls([]);
 
   return (
     <div className="section">
@@ -38,18 +32,31 @@ const UrlManager = ({ urls, setUrls, loading, t }) => {
         />
         <button className="btn small primary-btn" onClick={addUrl} disabled={loading}>+</button>
       </div>
-      <div className="muted">{urls.length} {t.urlsCount}</div>
-      <ul className="list-items">
-        {urls.map((u, i) => (
-          <li className="list-item" key={i}>
-            <span title={u} className="url-name">{escapeHtml(u)}</span>
-            <button className="btn small remove-btn" onClick={() => removeUrl(i)} disabled={loading}>✖</button>
-          </li>
-        ))}
-      </ul>
-      <div className="section-controls">
-        <button className="btn small clear" onClick={clearUrls} disabled={loading}>{t.clearUrls}</button>
+
+      <div className={`toggle-header ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
+        <span>
+          {isOpen ? 'Ocultar Lista' : 'Ver URLs Adicionadas'}
+          <span className="item-count">{urls.length}</span>
+        </span>
+        <span className="toggle-icon">▼</span>
       </div>
+
+      {isOpen && urls.length > 0 && (
+        <ul className="list-items">
+          {urls.map((u, i) => (
+            <li className="list-item" key={i}>
+              <span className="url-name" title={u}>{u}</span>
+              <button className="btn small remove-btn" onClick={() => removeUrl(i)} disabled={loading}>✖</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      
+      {isOpen && urls.length > 0 && (
+        <div className="section-controls">
+          <button className="btn small clear" onClick={clearUrls} disabled={loading}>{t.clearUrls}</button>
+        </div>
+      )}
     </div>
   );
 };

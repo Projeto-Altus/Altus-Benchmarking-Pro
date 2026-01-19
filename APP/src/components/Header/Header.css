@@ -1,5 +1,3 @@
-.nav { background: transparent; box-shadow: 0 2px 0 rgba(0,0,0,0.03); }
-
 .nav-inner { 
   display:flex; align-items:center; 
   justify-content: space-between; 
@@ -21,8 +19,8 @@
     margin-left: 20px; 
 }
 
-.logo-pill { display:flex; align-items:center; justify-content:center; gap:12px; background: rgba(255,255,255,0.06); padding:10px 20px; border-radius:8px; min-width:100px; }
-.logo-text { color:#ffffff; font-weight:700; font-size:18px; font-family: 'Kokoro', 'Inria Sans', sans-serif; }
+.logo-pill { display:flex; align-items:center; justify-content:center; gap:12px; background: rgba(255,255,255,0.06); border-radius:8px; min-width:100px; }
+.logo-img{height: 35px; width: auto; display: block; object-fit: fill; border-radius: 8px;}
 .app-title { color:#fff; font-weight:700; font-size:28px; letter-spacing:1px; font-family: 'Kokoro', 'Inria Sans', sans-serif; }
 
 .instructions-btn { 

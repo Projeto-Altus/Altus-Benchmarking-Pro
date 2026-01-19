@@ -263,7 +263,6 @@ function App() {
       <InstructionsModal 
         isOpen={showInstructions} 
         onClose={() => setShowInstructions(false)} 
-        content={t.instructionsContent}
         t={t}
       />
 
