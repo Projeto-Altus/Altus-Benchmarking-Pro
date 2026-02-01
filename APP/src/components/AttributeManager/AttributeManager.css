@@ -3,9 +3,10 @@
   grid-template-columns: 1fr 60px auto; 
   gap: 12px; 
   align-items: center; 
-  padding: 8px 10px;
+  padding: 4px 8px;             /* Reduzido de 8px 10px */
   border-bottom: 1px dashed var(--input-border);
   width: 100%;
+  font-size: 13px;              /* Fonte um pouco menor */
 }
 
 .attr-item:last-child {
