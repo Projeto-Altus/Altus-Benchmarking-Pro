@@ -41,21 +41,14 @@ def compare_products():
                 "details": errors
             }), 400
 
-        async def run_tasks(urls):
-            tasks = [ScraperService.extract_content(url) for url in urls]
-            return await asyncio.gather(*tasks, return_exceptions=True)
-
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        results = loop.run_until_complete(run_tasks(valid_urls))
-        loop.close()
+        try:
+            results = loop.run_until_complete(ScraperService.scrape_batch(valid_urls))
+        finally:
+            loop.close()
 
-        scraped_results = {}
-        for url, res in zip(valid_urls, results):
-            if isinstance(res, Exception):
-                scraped_results[url] = f"ERRO: {str(res)}"
-            else:
-                scraped_results[url] = res
+        scraped_results = {url: res for url, res in zip(valid_urls, results)}
 
         prompt = AIService.build_prompt(scraped_results, req.attributes)
         ai_data = AIService.get_comparison_data(
@@ -78,4 +71,6 @@ def compare_products():
     except ValidationError as e:
         return jsonify({"error": "Erro de validação de dados", "details": e.errors()}), 422
     except Exception as e:
+        import traceback
+        print(traceback.format_exc()) 
         return jsonify({"error": "Erro interno do servidor", "details": str(e)}), 500

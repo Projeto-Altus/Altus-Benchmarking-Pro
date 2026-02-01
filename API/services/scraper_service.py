@@ -2,6 +2,7 @@ import asyncio
 import random
 import os
 import time
+import shutil
 import validators
 import traceback
 from urllib.parse import urlparse
@@ -13,128 +14,114 @@ SEMAPHORE = asyncio.Semaphore(3)
 
 class ScraperService:
     USER_AGENTS = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
     ]
 
     @staticmethod
+    def clear_downloads_folder():
+        folder = os.path.abspath(Config.DOWNLOAD_FOLDER)
+        try:
+            if os.path.exists(folder):
+                shutil.rmtree(folder, ignore_errors=True)
+            os.makedirs(folder, exist_ok=True)
+            print(f">>> [LIMPEZA] Pasta preparada: {folder}")
+        except Exception as e:
+            print(f">>> [ERRO LIMPEZA] {e}")
+
+    @staticmethod
     def clean_url(url: str) -> str:
-        return url.strip()
+        return url.strip() if url else ""
 
     @staticmethod
     def validate_url(url: str):
-        """Valida se a URL está bem formatada"""
         if not url:
             raise InvalidURLError("URL vazia.")
-        
         parsed = urlparse(url)
         if parsed.scheme not in ('http', 'https') or not parsed.netloc:
-            raise InvalidURLError(f"Protocolo ou domínio inválido: {url}")
-        
-        if not validators.url(url):
-             print(f">>> [AVISO] URL complexa detectada: {url[:30]}...")
+            raise InvalidURLError(f"URL inválida: {url}")
 
     @staticmethod
     async def save_debug(page, tag):
-        """Salva screenshot garantindo que a pasta existe"""
         try:
+            if page.is_closed(): return
             folder = Config.DOWNLOAD_FOLDER
-            if not os.path.exists(folder):
-                os.makedirs(folder, exist_ok=True)
-
-            timestamp = int(time.time())
-            safe_tag = "".join([c if c.isalnum() else "_" for c in tag])[-50:]
-            filename = f"debug_{timestamp}_{safe_tag}.png"
-            path_img = os.path.join(folder, filename)
-            
-            await page.screenshot(path=path_img, full_page=True)
-            print(f">>> [SCREENSHOT] Salvo: {filename}")
-        except Exception as e:
-            print(f">>> [ERRO SCREENSHOT] Não foi possível salvar: {str(e)}")
-
-    @classmethod
-    async def apply_stealth(cls, page):
-        await page.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-            window.chrome = { runtime: {} };
-        """)
+            os.makedirs(folder, exist_ok=True)
+            filename = f"err_{int(time.time())}_{tag[:15]}.png"
+            await page.screenshot(path=os.path.join(folder, filename))
+        except:
+            pass
 
     @classmethod
     async def extract_content(cls, url: str, timeout: int = 40) -> str:
         current_url = cls.clean_url(url)
-        print(f"\n{'='*60}\n[PROCESSO] Iniciando: {current_url}")
-        
-        try:
-            cls.validate_url(current_url)
-        except InvalidURLError as e:
-            print(f"[ABORTADO] URL Inválida: {str(e)}")
-            raise e
-
-        last_error = None
-        max_retries = 3
+        cls.validate_url(current_url)
+        print(f"\n[INICIANDO] {current_url[:60]}")
+        max_retries = 2
+        last_error = "Não foi possível carregar o conteúdo."
 
         async with SEMAPHORE:
-            for attempt in range(max_retries):
-                print(f"[TENTATIVA {attempt + 1}/{max_retries}] Abrindo navegador para {current_url[:30]}...")
-                
+            for attempt in range(max_retries + 1):
                 browser = None
                 try:
                     async with async_playwright() as p:
                         browser = await p.chromium.launch(
                             headless=Config.HEADLESS,
-                            args=["--no-sandbox", "--disable-dev-shm-usage"]
+                            args=[
+                                "--no-sandbox",
+                                "--disable-blink-features=AutomationControlled",
+                                "--disable-web-security",
+                                "--disable-features=IsolateOrigins,site-per-process",
+                                "--blink-settings=primaryHoverAnimateFinished=true"
+                            ]
                         )
-                        
                         context = await browser.new_context(
                             user_agent=random.choice(cls.USER_AGENTS),
-                            viewport={"width": 1920, "height": 1080}
+                            viewport={"width": 1280, "height": 800},
+                            locale="pt-BR",
+                            extra_http_headers={"Accept-Language": "pt-BR,pt;q=0.9"}
                         )
                         page = await context.new_page()
-                        await cls.apply_stealth(page)
+                        await page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+                        
+                        timeout_ms = timeout * 1000
+                        page.set_default_timeout(timeout_ms)
 
-                        try:
-                            timeout_ms = timeout * 1000
-                            page.set_default_timeout(timeout_ms)
-                            
-                            response = await page.goto(current_url, wait_until="domcontentloaded", timeout=timeout_ms)
-                            print(f"[DEBUG] Navegação OK (Status: {response.status if response else 'N/A'}). Renderizando...")
-                            
-                            await asyncio.sleep(5)
-                            await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                            await asyncio.sleep(2)
-                            
-                            content = await page.inner_text("body")
-                            char_count = len(content)
-                            print(f"[INFO] {char_count} caracteres extraídos.")
+                        await page.goto(current_url, wait_until="domcontentloaded", timeout=timeout_ms)
+                        await asyncio.sleep(random.uniform(5, 7))
+                        
+                        await page.mouse.wheel(0, 800)
+                        await asyncio.sleep(2)
 
-                            await cls.save_debug(page, f"SUCESSO_{current_url}")
-
-                            if char_count > 200:
-                                await browser.close()
-                                return content[:100000]
-                            
-                            print("[AVISO] Página vazia.")
-                            raise Exception("Conteúdo vazio")
-
-                        except Exception as e_inner:
-                            print(f"[ERRO NA NAVEGAÇÃO] {str(e_inner)}")
-                            await cls.save_debug(page, f"ERRO_{current_url}")
-                            raise e_inner
-
-                except PlaywrightTimeout:
-                    print(f"[TIMEOUT] A página demorou demais.")
-                    last_error = ScrapingTimeoutError(f"Timeout de {timeout}s")
+                        content = await page.inner_text("body")
+                        if len(content.strip()) > 5000:
+                            print(f"[SUCESSO] {len(content)} chars: {current_url[:30]}")
+                            return content[:120000]
+                        
+                        last_error = f"Conteúdo insuficiente ({len(content)} chars)."
+                        await cls.save_debug(page, f"fail_{attempt}")
                 except Exception as e:
-                    print(f"[ERRO CRÍTICO] {str(e)}")
-                    last_error = e
+                    last_error = str(e)[:100]
+                    print(f"[AVISO] Tentativa {attempt + 1}: {last_error}")
                 finally:
-                    if browser:
-                        await browser.close()
-                
-                if attempt < max_retries - 1:
-                    wait_retry = random.uniform(3, 6)
-                    print(f"[REPETIR] Aguardando {wait_retry:.1f}s...")
-                    await asyncio.sleep(wait_retry)
+                    if browser: await browser.close()
 
-            print(f"[FALHA FINAL] Desistindo de {current_url}")
-            return ""
+                if attempt < max_retries:
+                    await asyncio.sleep(random.uniform(3, 5))
+
+        return f"PRODUTO_INDISPONIVEL_ERRO: {last_error}"
+
+    @classmethod
+    async def scrape_batch(cls, urls: list, timeout: int = 45):
+        cls.clear_downloads_folder()
+        tasks = [cls.extract_content(url, timeout) for url in urls]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        final_results = []
+        for res in results:
+            if isinstance(res, Exception):
+                final_results.append(f"ERRO_CRITICO_SISTEMA: {str(res)}")
+            else:
+                final_results.append(res)
+        return final_results
