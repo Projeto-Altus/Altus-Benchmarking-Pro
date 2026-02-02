@@ -1,0 +1,144 @@
+/* DataCard.css */
+
+.data-card {
+  background: var(--card-bg) !important;
+  border: var(--card-border);
+  color: var(--card-text);
+  border-radius: 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Importante para conter os scrolls internos */
+  height: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.data-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* --- Header --- */
+.data-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(59, 139, 214, 0.1); /* Linha azul sutil */
+  background: linear-gradient(to right, rgba(59, 139, 214, 0.05), transparent); /* Gradiente leve azul */
+}
+
+.data-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--btn-primary); /* Azul da Identidade */
+  margin: 0;
+  font-family: 'Kokoro', 'Inria Sans', sans-serif;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.data-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-icon-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--input-border);
+  color: var(--card-text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.action-icon-btn:hover:not(:disabled) {
+  background: rgba(59, 139, 214, 0.1);
+  border-color: var(--btn-primary);
+  color: var(--btn-primary);
+}
+
+.divider-vertical {
+  width: 1px;
+  height: 16px;
+  background: var(--input-border);
+  margin: 0 2px;
+}
+
+/* --- Conteúdo Principal (A Mágica do Scroll Separado) --- */
+.data-content {
+  flex: 1; /* Ocupa todo o espaço disponível entre header e footer */
+  display: flex;
+  flex-direction: column; /* Empilha URL e Atributos */
+  padding: 0; /* Padding removido aqui e passado para os filhos */
+  overflow: hidden; /* Trava scroll geral */
+}
+
+/* Wrapper para cada gerenciador */
+.manager-wrapper {
+  flex: 1; /* Força divisão 50/50 do espaço */
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  min-height: 0; /* Permite que o flex shrink funcione e ative o scroll interno */
+  overflow: hidden;
+}
+
+/* Divisória visual entre os dois blocos */
+.section-divider {
+  height: 1px;
+  background: var(--input-border);
+  width: 100%;
+}
+
+/* --- Footer --- */
+.data-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--input-border);
+  background: var(--card-bg);
+  z-index: 10;
+}
+
+.btn-generate-hero {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--btn-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(59, 139, 214, 0.25);
+  transition: all 0.2s;
+  font-family: 'Kokoro', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.btn-generate-hero:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(59, 139, 214, 0.35);
+  filter: brightness(1.1);
+}
+
+.btn-generate-hero:disabled {
+  background: #64748b;
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}

@@ -16,7 +16,8 @@
   flex-direction: column;
   transition: all 0.2s ease;
   position: relative;
-  overflow: visible; /* Necessário para a coroa e badge diagonal */
+  /* Garante que nada saia do card */
+  overflow: hidden; 
   height: 100%;
 }
 
@@ -25,53 +26,68 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-/* --- Coroa Minimalista --- */
-.winner-crown-wrapper {
-  position: absolute;
-  top: -18px;
-  right: -12px;
-  z-index: 10;
-  transform: rotate(15deg);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
-
-.minimal-crown-svg {
-  width: 50px;
-  height: 50px;
-  color: #D4AF37; 
-  filter: drop-shadow(10px 10px 8px rgba(0, 0, 0, 0.221));
-  display: block;
-}
-
-/* --- Badge Superior (Geométrico) --- */
-.ai-fallback-patch {
-  display: inline-flex;
-  align-items: center;
-  background: var(--color-warning-orange);
-  color: white;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 4px 20px;
-  margin-bottom: 12px;
-  margin-left: -5px;
-  letter-spacing: 0.08em;
-  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-}
-
-.sparkle-mini { 
-  margin-right: 6px; 
-  font-size: 12px;
-}
-
-/* --- Fallback Total --- */
-.premium-product-card.is-total-fallback {
-  border: 1.5px solid var(--color-warning-orange);
-  background-color: var(--color-ai-bg-light);
+/* Borda Azul para o Vencedor */
+.premium-product-card.is-winner-card {
+  border: 2px solid var(--color-premium-blue);
+  background: linear-gradient(to bottom, rgba(0, 112, 243, 0.03), #fff);
 }
 
 .card-inner-content {
   padding: 24px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-patches-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  margin-left: 0; 
+}
+
+.ai-fallback-patch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-warning-orange);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 5px 26px 5px 26px;
+  letter-spacing: 0.08em;
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.winner-patch-geometric {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-premium-blue); 
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 5px 26px 5px 26px;
+  letter-spacing: 0.08em;
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.sparkle-mini { 
+  margin-top: -1px;
+  /* Ajuste fino para o ícone não ficar muito na borda do corte */
+  margin-left: 2px; 
+}
+
+/* --- Resto do Seu CSS Original (Sem alterações) --- */
+.premium-product-card.is-total-fallback {
+  border: 1.5px solid var(--color-warning-orange);
+  background-color: var(--color-ai-bg-light);
 }
 
 .card-header-row {
@@ -79,7 +95,12 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24px;
-  min-height: 80px;
+  min-height: 60px;
+}
+
+.product-info-group {
+  flex: 1;
+  padding-right: 12px;
 }
 
 .product-name-text {
@@ -95,10 +116,8 @@
   color: var(--color-premium-blue);
   text-decoration: none;
 }
-
 .product-url-link:hover { text-decoration: underline; }
 
-/* --- Badge IA Azul --- */
 .ai-badge-inline {
   display: inline-flex;
   align-items: center;
@@ -119,7 +138,6 @@
   font-size: 13px;
 }
 
-/* --- Resumo e Texto --- */
 .ai-summary-container {
   background: #f9f9f9;
   border-radius: 8px;
@@ -155,7 +173,7 @@
   cursor: pointer;
 }
 
-.specs-list-container { display: flex; flex-direction: column; gap: 12px; }
+.specs-list-container { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
 
 .spec-item-row { 
   display: flex; 
@@ -183,6 +201,7 @@
   font-family: serif; 
   font-weight: 900; 
   margin-left: 6px; 
+  cursor: help; 
 }
 
 .score-badge-minimal { font-size: 28px; font-weight: 800; }

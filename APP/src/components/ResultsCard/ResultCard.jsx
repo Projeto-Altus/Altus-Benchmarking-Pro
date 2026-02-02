@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Trophy, Sparkles } from 'lucide-react';
 import './ResultCard.css';
 
 const ResultCard = ({ product, attributes, isWinner }) => {
@@ -23,19 +24,22 @@ const ResultCard = ({ product, attributes, isWinner }) => {
   return (
     <div className={`premium-product-card ${isTotalFallback ? 'is-total-fallback' : ''} ${isWinner ? 'is-winner-card' : ''}`}>
       
-      {isWinner && (
-        <div className="winner-crown-wrapper">
-          <svg className="minimal-crown-svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 17H5V15L3 7L8 11L12 3L16 11L21 7L19 15V17Z" />
-            <rect x="5" y="18" width="14" height="2" rx="1" />
-          </svg>
-        </div>
-      )}
-
       <div className="card-inner-content">
-        {isTotalFallback && (
-          <div className="ai-fallback-patch">
-            <span className="sparkle-mini">✦</span> DADOS ESTIMADOS POR IA
+        
+        {/* --- ÁREA DE PATCHES (Fica dentro do padding, sem quebrar) --- */}
+        {(isWinner || isTotalFallback) && (
+          <div className="card-patches-wrapper">
+            {isWinner && (
+              <div className="winner-patch-geometric">
+                <Trophy size={12} strokeWidth={3} className="sparkle-mini" /> MELHOR ESCOLHA
+              </div>
+            )}
+            
+            {isTotalFallback && (
+              <div className="ai-fallback-patch">
+                <Sparkles size={12} strokeWidth={3} className="sparkle-mini" /> DADOS ESTIMADOS POR IA
+              </div>
+            )}
           </div>
         )}
 
@@ -55,9 +59,7 @@ const ResultCard = ({ product, attributes, isWinner }) => {
           <div className="ai-summary-container">
             <div className={`ai-summary-text ${isExpanded ? 'is-open' : 'is-clamped'}`}>
               <div className="ai-badge-inline">
-                <svg className="ai-sparkle-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
-                </svg>
+                <Sparkles className="ai-sparkle-icon" />
                 <span className="ai-label-blue">IA:</span>
               </div>
               {reason}

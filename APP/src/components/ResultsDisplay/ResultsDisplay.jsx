@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
-import ResultCard from '../ResultsCard/ResultCard'
+import { 
+  Trophy, 
+  AlertTriangle, 
+  Check, 
+  Download, 
+  ExternalLink, 
+  BarChart2, 
+  Search 
+} from 'lucide-react';
+import ResultCard from '../ResultsCard/ResultCard'; // Assumindo que este componente existe
 import './ResultsDisplay.css';
 
-const ResultsDisplay = ({ results, loading, statusMessage, error, downloadLink, t, attributes }) => {
+const ResultsDisplay = ({ 
+  results, loading, statusMessage, error, downloadLink, t, attributes 
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const sortedResults = results ? [...results].sort((a, b) => {
@@ -11,72 +22,91 @@ const ResultsDisplay = ({ results, loading, statusMessage, error, downloadLink, 
     return scoreB - scoreA;
   }) : [];
 
-  if (loading) {
-    return (
-      <aside className="card right-card">
-        <h2 className="results-title">{t.results}</h2>
-        <div className="results-body">
-          <div className="spinner"></div>
+  // Função auxiliar para renderizar o conteúdo do corpo
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="loading-state">
+          <div className="spinner-modern"></div>
+          <span className="loading-text">{statusMessage || t.analyzing}</span>
         </div>
-        <p className="results-sub">{statusMessage}</p>
-      </aside>
-    );
-  }
+      );
+    }
 
-  if (error) {
-    return (
-      <aside className="card right-card">
-        <h2 className="results-title">{t.results}</h2>
-        <div className="results-body">
-          <div className="result-error-box"><strong>{t.error}:</strong> {error}</div>
+    if (error) {
+      return (
+        <div className="error-state">
+          <AlertTriangle size={24} />
+          <span className="error-text"><strong>{t.error}:</strong> {error}</span>
         </div>
-      </aside>
-    );
-  }
+      );
+    }
 
-  if (!results || results.length === 0) {
-    return (
-      <aside className="card right-card">
-        <h2 className="results-title">{t.results}</h2>
-        <div className="results-body">
-          <p className="no-data">{t.noResultsYet}</p>
+    if (!results || results.length === 0) {
+      return (
+        <div className="no-data-state">
+          <Search size={48} strokeWidth={1} />
+          <p className="no-data-text">{t.noResultsYet}</p>
         </div>
-      </aside>
+      );
+    }
+
+    // Sucesso - Análise Pronta
+    return (
+      <div className="success-view">
+        <div className="check-circle-modern">
+          <Check size={40} strokeWidth={3} />
+        </div>
+        
+        <h3 className="success-title">{t.analysisReady}</h3>
+        
+        <div className="success-actions">
+          <button className="btn-result-action btn-view" onClick={() => setIsModalOpen(true)}>
+            <BarChart2 size={18} />
+            {t.viewResults}
+          </button>
+          
+          {downloadLink && (
+            <a 
+              href={downloadLink} 
+              className="btn-result-action btn-download" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Download size={18} />
+              {t.download}
+            </a>
+          )}
+        </div>
+      </div>
     );
-  }
+  };
 
   return (
     <>
       <aside className="card right-card">
-        <h2 className="results-title">{t.results}</h2>
-        <div className="results-body">
-          <div className="success-view">
-            <div className="check-icon-circle">
-              <svg className="check-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="success-title">{t.analysisReady}</h3>
-            <div className="action-buttons">
-              <button className="btn btn-view-results" onClick={() => setIsModalOpen(true)}>
-                {t.viewResults}
-              </button>
-              {downloadLink && (
-                 <a href={downloadLink} className="btn btn-download-results" target="_blank" rel="noopener noreferrer">
-                   {t.download}
-                 </a>
-              )}
-            </div>
-          </div>
+        {/* Header Consistente */}
+        <div className="results-header">
+          <h2 className="results-title-header">
+            <Trophy size={18} /> {t.results}
+          </h2>
         </div>
-        <p className="results-sub">{statusMessage}</p>
+
+        {/* Corpo Flexível */}
+        <div className="results-body-content">
+          {renderContent()}
+        </div>
       </aside>
 
+      {/* Modal de Detalhes */}
       {isModalOpen && (
         <div className="results-modal-overlay" onClick={() => setIsModalOpen(false)}>
           <div className="results-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="rm-header">
-              <span className="rm-title">{t.results} ({sortedResults.length})</span>
+              <span className="rm-title">
+                <BarChart2 size={20} className="text-primary" /> 
+                {t.results} ({sortedResults.length})
+              </span>
               <button className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</button>
             </div>
 

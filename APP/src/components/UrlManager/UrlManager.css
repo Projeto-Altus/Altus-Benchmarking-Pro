@@ -1,16 +1,12 @@
-/* AttributeManager.css */
-
-.attr-section {
+.url-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  /* Ocupa a outra metade do espaço */
   flex: 1; 
   min-height: 200px;
   overflow: hidden;
 }
 
-/* Reutilizando estrutura visual do UrlManager */
 .manager-label {
   font-size: 13px;
   font-weight: 700;
@@ -23,7 +19,9 @@
   opacity: 0.9;
 }
 
-.label-icon { color: var(--btn-primary); }
+.label-icon {
+  color: var(--btn-primary);
+}
 
 .manager-input-group {
   display: flex;
@@ -48,6 +46,10 @@
   box-shadow: 0 0 0 2px rgba(59, 139, 214, 0.15);
 }
 
+.manager-input.error {
+  border-color: #ef4444;
+}
+
 .btn-add {
   background: var(--btn-primary);
   color: white;
@@ -61,10 +63,16 @@
   transition: filter 0.2s;
 }
 
-.btn-add:hover:not(:disabled) { filter: brightness(1.1); }
-.btn-add:disabled { background: var(--input-border); cursor: not-allowed; opacity: 0.5; }
+.btn-add:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
 
-/* Header Fixo */
+.btn-add:disabled {
+  background: var(--input-border);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .list-header-row {
   display: flex;
   justify-content: space-between;
@@ -114,7 +122,6 @@
   color: #ef4444;
 }
 
-/* Lista Scrollável */
 .manager-list {
   list-style: none;
   padding: 0;
@@ -124,67 +131,44 @@
   gap: 6px;
   flex: 1; 
   overflow-y: auto;
-  padding-right: 4px;
-  scrollbar-width: thin;
+  padding-right: 0; 
+  
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
-/* Item Card (Com Grid para suportar Peso) */
-.attr-item-card {
-  display: grid;
-  grid-template-columns: 1fr auto auto; /* Nome | Peso | Remover */
+.manager-list::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.url-item-card {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
   background: rgba(0,0,0,0.02);
   border: 1px solid var(--input-border);
-  padding: 6px 10px; /* Levemente menor altura que URL pois tem input */
+  padding: 8px 10px;
   border-radius: 6px;
   transition: all 0.2s;
+  gap: 10px;
 }
 
-.attr-item-card:hover {
+.url-item-card:hover {
   background: var(--input-bg);
   border-color: rgba(59, 139, 214, 0.3);
 }
 
-.attr-text-content {
+.url-text-content {
   font-size: 13px;
   color: var(--card-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 500;
+  flex: 1;
+  opacity: 0.9;
 }
-
-/* Controle de Peso Compacto */
-.weight-control {
-  display: flex;
-  align-items: center;
-  background: rgba(0,0,0,0.05);
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  padding: 0 4px;
-}
-
-.weight-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  color: var(--card-text);
-  opacity: 0.5;
-  font-weight: 800;
-  margin-right: 4px;
-}
-
-.weight-input {
-  width: 30px;
-  background: transparent;
-  border: none;
-  color: var(--card-text);
-  font-weight: 700;
-  font-size: 12px;
-  text-align: center;
-  padding: 4px 0;
-}
-.weight-input:focus { outline: none; }
 
 .btn-remove-item {
   background: transparent;
@@ -204,6 +188,16 @@
   opacity: 1;
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
+}
+
+.input-error-msg {
+  font-size: 11px;
+  color: #ef4444;
+  margin-top: -8px;
+  margin-left: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .empty-list-placeholder {

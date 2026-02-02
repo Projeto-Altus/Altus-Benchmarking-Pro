@@ -1,91 +1,198 @@
+/* ResultsDisplay.css */
+
+/* O card principal (aside) já herda .card do App.css, aqui ajustamos o interno */
+.right-card {
+  padding: 0 !important; /* Remove padding padrão para controlar header/body */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* --- Header Padrão Altus --- */
+.results-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(59, 139, 214, 0.1);
+  background: linear-gradient(to right, rgba(59, 139, 214, 0.05), transparent);
+  min-height: 60px; /* Garante altura alinhada com outros cards */
+}
+
+.results-title-header {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--btn-primary);
+  margin: 0;
+  font-family: 'Kokoro', 'Inria Sans', sans-serif;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Corpo do Card --- */
+.results-body-content {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centraliza conteúdo vazio/loading */
+  overflow-y: auto;
+}
+
+/* --- Estados (Empty, Loading, Error) --- */
+
+.no-data-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--card-text);
+  opacity: 0.4;
+  gap: 12px;
+}
+
+.no-data-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.spinner-modern {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(59, 139, 214, 0.1);
+  border-left-color: var(--btn-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 13px;
+  color: var(--btn-primary);
+  font-weight: 600;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+.error-state {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ef4444;
+  max-width: 90%;
+}
+
+.error-text {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* --- Estado de Sucesso (Análise Pronta) --- */
 .success-view {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   height: 100%;
   text-align: center;
-  gap: 20px;
-  animation: fadeIn 0.4s ease;
+  gap: 24px;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.check-icon-circle {
-  width: 90px;
-  height: 90px;
+.check-circle-modern {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: rgba(59, 139, 214, 0.15); 
+  background: linear-gradient(135deg, rgba(59, 139, 214, 0.2), rgba(37, 99, 235, 0.1));
   border: 2px solid var(--btn-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
-  box-shadow: 0 0 20px rgba(59, 139, 214, 0.2);
-}
-
-.check-icon-svg {
-  width: 45px;
-  height: 45px;
   color: var(--btn-primary);
-  stroke-width: 2.5;
+  box-shadow: 0 0 30px rgba(59, 139, 214, 0.15);
+  margin-bottom: 8px;
 }
 
 .success-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   font-family: 'Kokoro', sans-serif;
   color: var(--card-text);
-  margin-bottom: 5px;
+  margin: 0;
 }
 
-.action-buttons {
+.success-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 280px;
+  max-width: 260px;
 }
 
-.btn-view-results {
-  background: var(--btn-bg);
-  color: white;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: none;
+.btn-result-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
-  transition: opacity 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
-
-.btn-view-results:hover {
-  opacity: 0.9;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-}
-
-.btn-download-results {
-  background: transparent;
-  border: 1px solid var(--btn-primary);
-  color: var(--btn-primary);
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s;
   text-decoration: none;
-  text-align: center;
-  font-weight: 600;
-  transition: background 0.2s, color 0.2s;
+  border: none;
 }
 
-.btn-download-results:hover {
-  background: rgba(59, 139, 214, 0.1);
+.btn-view {
+  background: var(--btn-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 139, 214, 0.25);
 }
 
+.btn-view:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 139, 214, 0.35);
+  filter: brightness(1.1);
+}
+
+.btn-download {
+  background: transparent;
+  border: 1px solid var(--input-border);
+  color: var(--card-text);
+}
+
+.btn-download:hover {
+  border-color: var(--btn-primary);
+  color: var(--btn-primary);
+  background: rgba(59, 139, 214, 0.05);
+}
+
+/* --- Modal de Resultados --- */
+/* Mantive a estrutura do modal mas modernizei as cores */
 .results-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10, 25, 47, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(10, 25, 47, 0.85); /* Fundo Altus Escuro */
+  backdrop-filter: blur(8px);
   z-index: 2000;
   display: flex;
   justify-content: center;
@@ -98,48 +205,58 @@
   width: 95%;
   max-width: 1200px;
   height: 90vh;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--card-border);
   display: flex;
   flex-direction: column;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: scaleUp 0.2s ease-out;
+  overflow: hidden;
 }
 
 .rm-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--card-border);
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--input-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: var(--card-bg);
-  border-radius: 8px 8px 0 0;
 }
 
 .rm-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--card-text);
   font-family: 'Kokoro', sans-serif;
-  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--card-text);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.close-btn:hover { opacity: 1; }
+
 .rm-body {
-  padding: 30px;
+  padding: 24px;
   overflow-y: auto;
-  background: var(--bg-body);
+  background: var(--bg-body); 
   flex: 1;
 }
 
 .results-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Fixado 2 colunas */
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
-
-.rm-body::-webkit-scrollbar { width: 8px; }
-.rm-body::-webkit-scrollbar-track { background: var(--bg-body); }
-.rm-body::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 4px; }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }

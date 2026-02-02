@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
+import { Plus, X, SlidersHorizontal, Trash2, Scale } from 'lucide-react';
 import './AttributeManager.css';
 
 const AttributeManager = ({ attributes, setAttributes, loading, t }) => {
   const [input, setInput] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
 
   const addAttr = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
     setAttributes([...attributes, { name: trimmed, importance: 5 }]);
     setInput('');
-    setIsOpen(true);
   };
 
   const removeAttr = (index) => setAttributes(attributes.filter((_, i) => i !== index));
@@ -18,63 +17,83 @@ const AttributeManager = ({ attributes, setAttributes, loading, t }) => {
 
   const handleImportanceChange = (index, value) => {
     let num = parseInt(value, 10);
-    if (isNaN(num) || num < 1) num = 1;
+    if (isNaN(num)) num = 0; 
     if (num > 10) num = 10;
-
+    
     const newAttrs = [...attributes];
     newAttrs[index].importance = num;
     setAttributes(newAttrs);
   };
 
-  const escapeHtml = (text) => String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+  const handleBlur = (index) => {
+    const newAttrs = [...attributes];
+    if (newAttrs[index].importance < 1) newAttrs[index].importance = 1;
+    setAttributes(newAttrs);
+  };
 
   return (
-    <div className="section">
-      <label className="label">{t.attrsLabel}</label>
-      <div className="input-row">
+    <div className="attr-section">
+      <label className="manager-label">
+        <SlidersHorizontal size={14} className="label-icon" />
+        {t.attrsLabel}
+      </label>
+      
+      <div className="manager-input-group">
         <input 
-          className="input-field" 
+          className="manager-input"
           value={input} 
           onChange={e => setInput(e.target.value)} 
           disabled={loading} 
-          placeholder="Ex: 'Preço', 'CPU'"
+          placeholder="Ex: Preço, Câmera, Design..."
           onKeyDown={(e) => e.key === 'Enter' && addAttr()}
         />
-        <button className="btn small primary-btn" onClick={addAttr} disabled={loading}>+</button>
+        <button className="btn-add" onClick={addAttr} disabled={loading || !input.trim()}>
+          <Plus size={18} strokeWidth={3} />
+        </button>
       </div>
 
-      <div className={`toggle-header ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
-        <span>
-          {isOpen ? 'Ocultar Atributos' : 'Ver Atributos Definidos'}
-          <span className="item-count">{attributes.length}</span>
-        </span>
-        <span className="toggle-icon">▼</span>
+      <div className="list-header-row">
+        <div className="header-title">
+          <span>Critérios Definidos</span>
+          {attributes.length > 0 && <span className="count-badge">{attributes.length}</span>}
+        </div>
+        
+        {attributes.length > 0 && (
+          <button className="btn-clear-mini" onClick={clearAttrs} disabled={loading}>
+            <Trash2 size={12} /> {t.clearAttrs}
+          </button>
+        )}
       </div>
 
-      {isOpen && attributes.length > 0 && (
-        <ul className="list-items">
+      {attributes.length > 0 ? (
+        <ul className="manager-list">
           {attributes.map((a, i) => (
-            <li className="list-item attr-item" key={i}>
-              <span className="attr-name">{escapeHtml(a.name)}</span>
-              <div className="importance-control-v2">
+            <li className="attr-item-card" key={i}>
+              <span className="attr-text-content" title={a.name}>{a.name}</span>
+              
+              <div className="weight-control" title="Peso de 1 a 10">
+                <span className="weight-label">PESO</span>
                 <input 
                   type="number" 
                   min="1" max="10" 
                   value={a.importance} 
                   onChange={e => handleImportanceChange(i, e.target.value)} 
-                  className="importance-number-input"
+                  onBlur={() => handleBlur(i)}
+                  className="weight-input"
                   disabled={loading}
                 />
               </div>
-              <button className="btn small remove-btn" onClick={() => removeAttr(i)} disabled={loading}>✖</button>
+
+              <button className="btn-remove-item" onClick={() => removeAttr(i)} disabled={loading}>
+                <X size={14} />
+              </button>
             </li>
           ))}
         </ul>
-      )}
-
-      {isOpen && attributes.length > 0 && (
-        <div className="section-controls">
-          <button className="btn small clear" onClick={clearAttrs} disabled={loading}>{t.clearAttrs}</button>
+      ) : (
+        <div className="empty-list-placeholder">
+          <Scale size={24} />
+          <span>Nenhum atributo definido</span>
         </div>
       )}
     </div>

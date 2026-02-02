@@ -1,109 +1,98 @@
 import React, { useState } from 'react';
-import '../../App.css';
+import { Plus, X, Link as LinkIcon, Trash2, AlertCircle, Link2Off } from 'lucide-react';
+import './UrlManager.css';
 
 const UrlManager = ({ urls, setUrls, loading, t }) => {
   const [input, setInput] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState(''); // 1. Estado para o erro
+  const [error, setError] = useState('');
 
-  // 2. Função auxiliar para validar URL
   const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
+    try { new URL(string); return true; } 
+    catch (_) { return false; }
   };
 
   const addUrl = () => {
     const trimmedInput = input.trim();
-    
     if (!trimmedInput) return;
 
-    // 3. Validação antes de adicionar
     if (!isValidUrl(trimmedInput)) {
-      setError('URL inválida. Certifique-se de incluir http:// ou https://');
+      setError('URL inválida. Inclua http:// ou https://');
       return;
     }
-
-    // Opcional: Evitar duplicatas
     if (urls.includes(trimmedInput)) {
-      setError('Esta URL já foi adicionada à lista.');
+      setError('Esta URL já está na lista.');
       return;
     }
 
     setUrls([...urls, trimmedInput]);
     setInput('');
-    setError(''); // Limpa o erro em caso de sucesso
-    setIsOpen(true);
+    setError('');
   };
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
-    if (error) setError(''); // Limpa o erro enquanto o usuário digita
+    if (error) setError('');
   };
 
-  const removeUrl = (index) => {
-    setUrls(urls.filter((_, i) => i !== index));
-  };
-
+  const removeUrl = (index) => setUrls(urls.filter((_, i) => i !== index));
   const clearUrls = () => setUrls([]);
 
   return (
-    <div className="section">
-      <label className="label">{t.urlsLabel}</label>
+    <div className="url-section">
+      <label className="manager-label">
+        <LinkIcon size={14} className="label-icon" />
+        {t.urlsLabel}
+      </label>
       
-      <div className="input-row">
+      <div className="manager-input-group">
         <input 
-          className="input-field" 
+          className={`manager-input ${error ? 'error' : ''}`}
           value={input} 
           onChange={handleInputChange} 
           disabled={loading} 
-          placeholder="Ex: https://produto-altus.com"
-          style={error ? { borderColor: '#ff6e6e' } : {}} /* Borda vermelha se der erro */
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault(); // Evita comportamento padrão de form
-              addUrl();
-            }
-          }}
+          placeholder="Cole o link do produto aqui..."
+          onKeyDown={(e) => e.key === 'Enter' && addUrl()}
         />
-        <button className="btn small primary-btn" onClick={(e) => {
-            e.preventDefault();
-            addUrl();
-        }} disabled={loading}>+</button>
+        <button className="btn-add" onClick={addUrl} disabled={loading || !input.trim()}>
+          <Plus size={18} strokeWidth={3} />
+        </button>
       </div>
 
-      {/* 4. Exibição da mensagem de erro */}
       {error && (
-        <div style={{ color: '#ff6e6e', fontSize: '12px', marginTop: '4px', marginLeft: '2px' }}>
-          ⚠️ {error}
+        <div className="input-error-msg">
+          <AlertCircle size={12} /> {error}
         </div>
       )}
 
-      <div className={`toggle-header ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
-        <span>
-          {isOpen ? 'Ocultar Lista' : 'Ver URLs Adicionadas'}
-          <span className="item-count">{urls.length}</span>
-        </span>
-        <span className="toggle-icon">▼</span>
+      {/* Header Fixo da Lista */}
+      <div className="list-header-row">
+        <div className="header-title">
+          <span>Lista de Produtos</span>
+          {urls.length > 0 && <span className="count-badge">{urls.length}</span>}
+        </div>
+        {urls.length > 0 && (
+          <button className="btn-clear-mini" onClick={clearUrls} disabled={loading}>
+            <Trash2 size={12} /> {t.clearUrls}
+          </button>
+        )}
       </div>
 
-      {isOpen && urls.length > 0 && (
-        <ul className="list-items">
+      {/* Lista ou Placeholder */}
+      {urls.length > 0 ? (
+        <ul className="manager-list">
           {urls.map((u, i) => (
-            <li className="list-item" key={i}>
-              <span className="url-name" title={u}>{u}</span>
-              <button className="btn small remove-btn" onClick={() => removeUrl(i)} disabled={loading}>✖</button>
+            <li className="url-item-card" key={i}>
+              <span className="url-text-content" title={u}>{u}</span>
+              <button className="btn-remove-item" onClick={() => removeUrl(i)} disabled={loading}>
+                <X size={14} />
+              </button>
             </li>
           ))}
         </ul>
-      )}
-      
-      {isOpen && urls.length > 0 && (
-        <div className="section-controls">
-          <button className="btn small clear" onClick={clearUrls} disabled={loading}>{t.clearUrls}</button>
+      ) : (
+        <div className="empty-list-placeholder">
+          <Link2Off size={24} />
+          <span>Nenhuma URL adicionada</span>
         </div>
       )}
     </div>

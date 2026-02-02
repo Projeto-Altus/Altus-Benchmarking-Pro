@@ -1,0 +1,187 @@
+.config-card {
+  background: var(--card-bg) !important;
+  border: var(--card-border);
+  color: var(--card-text);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  height: auto !important; 
+  align-self: start; 
+  padding: 0;
+  border-radius: 12px;
+  overflow: visible;
+  transition: all 0.3s ease;
+}
+
+/* HEADER */
+.config-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid rgba(59, 139, 214, 0.1);
+  background: linear-gradient(to right, rgba(59, 139, 214, 0.05), transparent);
+  border-radius: 12px 12px 0 0;
+}
+
+.config-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--btn-primary);
+  margin: 0;
+  font-family: 'Kokoro', 'Inria Sans', sans-serif; 
+  letter-spacing: -0.01em;
+  /* Flexbox para alinhar ícone e texto */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Corpo */
+.config-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+}
+
+/* ... Resto do CSS (Sem alterações) ... */
+.config-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--card-text);
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label-icon {
+  opacity: 0.7;
+}
+
+.config-field {
+  width: 100%;
+  background: var(--input-bg);
+  border: var(--input-border);
+  color: var(--card-text);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.config-field:focus {
+  outline: none;
+  border-color: var(--btn-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.api-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--input-bg);
+  border: var(--input-border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.api-input-container:focus-within {
+  border-color: var(--btn-primary);
+  box-shadow: 0 0 0 1px var(--btn-primary);
+}
+
+.config-field.with-actions {
+  border: none;
+  background: transparent;
+  padding-right: 100px; 
+  box-shadow: none;
+}
+
+.config-field.with-actions:focus {
+  box-shadow: none;
+}
+
+.input-actions {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+.icon-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--card-text);
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.icon-action-btn:hover:not(:disabled) {
+  opacity: 1;
+  background: rgba(255,255,255,0.1);
+  color: var(--btn-primary);
+}
+
+.icon-action-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.divider-vertical {
+  width: 1px;
+  height: 16px;
+  background: var(--card-text);
+  opacity: 0.1;
+  margin: 0 2px;
+}
+
+.secure-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.helper-text {
+  font-size: 11px;
+  color: var(--card-text);
+  opacity: 0.5;
+  margin: 0;
+  line-height: 1.4;
+}
+
+[data-theme="light"] .icon-action-btn:hover:not(:disabled) {
+  background: rgba(0,0,0,0.08);
+}
+
+@media (max-width: 480px) {
+  .config-card {
+    width: 100%;
+  }
+}

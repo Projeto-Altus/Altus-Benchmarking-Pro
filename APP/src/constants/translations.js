@@ -49,7 +49,17 @@ export const translations = {
           'Como funciona a Nota: A IA atribuirá uma nota de 0 a 100 baseada estritamente nesses pesos. Se "Preço" tiver peso 10, um produto barato ganhará muito mais pontos do que um produto caro, mesmo que este tenha outros atributos bons.'
         ]
       }
-    }
+    },
+    configTitle: 'Conexão da IA',
+    aiProvider: 'Provedor de IA',
+    secure: 'Segura',
+    secureKeyTooltip: 'Chave salva com segurança',
+    hide: 'Ocultar',
+    show: 'Mostrar',
+    saveAndEncrypt: 'Criptografar e Salvar',
+    loadSavedKey: 'Carregar chave salva',
+    helperKeySaved: 'Chave salva disponível. Use o download para carregar.',
+    helperKeyInsert: 'Insira sua chave e salve para acesso rápido.'
   },
   en: {
     title: 'Benchmarking Tool',
@@ -101,6 +111,16 @@ export const translations = {
           'How Scoring Works: The AI gives a score from 0 to 100 based strictly on these weights. If "Price" has weight 10, a cheap product will score significantly higher than an expensive one.'
         ]
       }
-    }
+    },
+    configTitle: 'AI Connection',
+    aiProvider: 'AI Provider',
+    secure: 'Secure',
+    secureKeyTooltip: 'Key saved securely',
+    hide: 'Hide',
+    show: 'Show',
+    saveAndEncrypt: 'Encrypt and Save',
+    loadSavedKey: 'Load saved key',
+    helperKeySaved: 'Saved key available. Use download to load.',
+    helperKeyInsert: 'Insert your key and save for quick access.'
   }
 };
