@@ -7,11 +7,13 @@ import PasswordModal from './components/PasswordModal/PasswordModal';
 import ConfigCard from './components/ConfigCard/ConfigCard'; 
 import DataCard from './components/DataCard/DataCard'; 
 import ReportView from './components/ReportView/ReportView'; 
+import Dashboard from './components/Dashboard/Dashboard';
 
 import { translations } from './constants/translations';
 import { useBenchmarking } from './hooks/useBenchmarking';
 import { exportConfig, importConfig } from './utils/fileHandler';
 import { hasStoredApiKey, saveApiKey, loadApiKey } from './utils/cryptoUtils';
+import { saveBenchmarkToHistory } from './utils/historyHandler';
 
 function App() {
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'pt');
@@ -19,35 +21,62 @@ function App() {
   const [showInstructions, setShowInstructions] = useState(false);
   const t = translations[lang];
 
-  const [currentScreen, setCurrentScreen] = useState('analysis');
+  const [currentScreen, setCurrentScreen] = useState('dashboard');
 
   const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState(localStorage.getItem('provider') || 'google');
   const [urlList, setUrlList] = useState([]);
   const [attrWithImportance, setAttrWithImportance] = useState([]);
   
+  const [displayResults, setDisplayResults] = useState([]);
+
   const [hasStoredKey, setHasStoredKey] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordModalMode, setPasswordModalMode] = useState(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [showApiKeyPassword, setShowApiKeyPassword] = useState(false);
 
-  const { generateBenchmark, results, loading, error, statusMessage, downloadLink } = useBenchmarking();
+  const { generateBenchmark, results: hookResults, loading, error, statusMessage, downloadLink } = useBenchmarking();
 
   useEffect(() => { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); }, [theme]);
   useEffect(() => { localStorage.setItem('lang', lang); }, [lang]);
   useEffect(() => { localStorage.setItem('provider', provider); }, [provider]);
   useEffect(() => { setHasStoredKey(hasStoredApiKey()); }, []);
 
+  useEffect(() => {
+    if (hookResults && hookResults.length > 0) {
+      setDisplayResults(hookResults); 
+      
+      const sorted = [...hookResults].sort((a, b) => (parseFloat(b.pontuacao_final) || 0) - (parseFloat(a.pontuacao_final) || 0));
+      const winner = sorted[0];
+      
+      saveBenchmarkToHistory({
+        title: `Benchmark ${winner.nome_produto?.substring(0, 20)}...`,
+        winner: winner.nome_produto,
+        winnerScore: winner.pontuacao_final || 0,
+        itemCount: urlList.length,
+        fullData: { urlList, attrWithImportance, results: hookResults }
+      });
+    }
+  }, [hookResults]);
+
+  const handleLoadHistory = (historyItem) => {
+    const data = historyItem.fullData;
+    if (data) {
+      setUrlList(data.urlList || []);
+      setAttrWithImportance(data.attrWithImportance || []);
+      setDisplayResults(data.results || []); 
+      setCurrentScreen('analysis'); 
+    }
+  };
+
   const toggleLang = () => setLang(prev => prev === 'pt' ? 'en' : 'pt');
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-
   const handleSaveApiKey = () => {
     if (!apiKey.trim()) { alert('Digite uma API Key'); return; }
     setPasswordModalMode('save'); setShowPasswordModal(true);
   };
   const handleLoadApiKey = () => { setPasswordModalMode('load'); setShowPasswordModal(true); };
-  
   const handlePasswordConfirm = async (password) => {
     setPasswordLoading(true);
     try {
@@ -56,21 +85,17 @@ function App() {
       setShowPasswordModal(false);
     } catch (error) { alert('Erro na senha.'); } finally { setPasswordLoading(false); }
   };
-
   const handleExport = () => {
     if (urlList.length === 0) return alert('Configure antes de exportar');
     exportConfig(urlList, attrWithImportance);
   };
-  
   const handleImport = async () => {
     try { const config = await importConfig(); setUrlList(config.urls); setAttrWithImportance(config.attributes); } 
     catch (error) { alert(error.message); }
   };
-
   const handleGenerate = () => {
     generateBenchmark({ apiKey, urls: urlList, attributes: attrWithImportance, provider, t });
   };
-
   const handleOpenReport = () => {
     setCurrentScreen('report');
   };
@@ -88,17 +113,43 @@ function App() {
         />
       )}
 
-      <main className={currentScreen === 'report' ? '' : 'main-grid'}>
+      <main className={currentScreen === 'report' ? '' : (currentScreen === 'dashboard' ? '' : 'main-grid')}>
         
-        {currentScreen === 'report' ? (
-          <ReportView 
-            results={results}
-            attributes={attrWithImportance}
-            onBack={() => setCurrentScreen('analysis')}
+        {currentScreen === 'dashboard' && (
+          <Dashboard 
+            onNewAnalysis={() => {
+              setUrlList([]);
+              setAttrWithImportance([]);
+              setDisplayResults([]);
+              setCurrentScreen('analysis');
+            }}
+            onLoad={handleLoadHistory} 
             t={t}
           />
-        ) : (
+        )}
+
+        {currentScreen === 'analysis' && (
           <>
+            <div style={{ gridColumn: '1 / -1', marginBottom: '10px' }}>
+              <button 
+                onClick={() => setCurrentScreen('dashboard')}
+                className="btn-back-dash-link" 
+                style={{
+                  background: 'none', 
+                  border: 'none', 
+                  color: 'var(--text-secondary)', 
+                  cursor: 'pointer', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '5px',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}
+              >
+                ← Voltar ao Dashboard
+              </button>
+            </div>
+
             <ConfigCard 
               t={t}
               loading={loading}
@@ -128,7 +179,7 @@ function App() {
             />
 
             <ResultsDisplay 
-              results={results} 
+              results={displayResults} 
               loading={loading} 
               statusMessage={statusMessage} 
               error={error} 
@@ -138,6 +189,15 @@ function App() {
               onGenerateReport={handleOpenReport} 
             />
           </>
+        )}
+
+        {currentScreen === 'report' && (
+          <ReportView 
+            results={displayResults} 
+            attributes={attrWithImportance}
+            onBack={() => setCurrentScreen('analysis')}
+            t={t}
+          />
         )}
       
       </main>
