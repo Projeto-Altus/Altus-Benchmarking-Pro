@@ -4,15 +4,15 @@ import {
   AlertTriangle, 
   Check, 
   Download, 
-  ExternalLink, 
   BarChart2, 
-  Search 
+  Search, 
+  FileText 
 } from 'lucide-react';
-import ResultCard from '../ResultsCard/ResultCard'; // Assumindo que este componente existe
+import ResultCard from '../ResultsCard/ResultCard'; 
 import './ResultsDisplay.css';
 
 const ResultsDisplay = ({ 
-  results, loading, statusMessage, error, downloadLink, t, attributes 
+  results, loading, statusMessage, error, downloadLink, t, attributes, onGenerateReport 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -22,7 +22,6 @@ const ResultsDisplay = ({
     return scoreB - scoreA;
   }) : [];
 
-  // Função auxiliar para renderizar o conteúdo do corpo
   const renderContent = () => {
     if (loading) {
       return (
@@ -51,7 +50,6 @@ const ResultsDisplay = ({
       );
     }
 
-    // Sucesso - Análise Pronta
     return (
       <div className="success-view">
         <div className="check-circle-modern">
@@ -66,15 +64,21 @@ const ResultsDisplay = ({
             {t.viewResults}
           </button>
           
+          <button className="btn-result-action btn-download" onClick={onGenerateReport}>
+            <FileText size={18} />
+            Gerar Relatório Executivo
+          </button>
+
           {downloadLink && (
             <a 
               href={downloadLink} 
               className="btn-result-action btn-download" 
               target="_blank" 
               rel="noopener noreferrer"
+              style={{marginTop: '8px'}} 
             >
               <Download size={18} />
-              {t.download}
+              Baixar CSV / Excel
             </a>
           )}
         </div>
@@ -85,26 +89,23 @@ const ResultsDisplay = ({
   return (
     <>
       <aside className="card right-card">
-        {/* Header Consistente */}
         <div className="results-header">
           <h2 className="results-title-header">
             <Trophy size={18} /> {t.results}
           </h2>
         </div>
 
-        {/* Corpo Flexível */}
         <div className="results-body-content">
           {renderContent()}
         </div>
       </aside>
 
-      {/* Modal de Detalhes */}
       {isModalOpen && (
         <div className="results-modal-overlay" onClick={() => setIsModalOpen(false)}>
           <div className="results-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="rm-header">
               <span className="rm-title">
-                <BarChart2 size={20} className="text-primary" /> 
+                <BarChart2 size={20} style={{marginRight: 8, color: 'var(--btn-primary)'}} /> 
                 {t.results} ({sortedResults.length})
               </span>
               <button className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</button>

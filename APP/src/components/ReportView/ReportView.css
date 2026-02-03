@@ -1,0 +1,237 @@
+/* --- CONTAINER DA TELA (Scrollável) --- */
+.report-container-wrapper {
+  background-color: #525659; /* Cor de fundo cinza escuro */
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%;
+  height: 100%;
+  overflow-y: auto; /* Scroll apenas aqui */
+  z-index: 2000;
+  display: block; /* MUDANÇA: Block em vez de Flex evita cortes no scroll */
+  padding: 40px 20px 100px 20px; /* Padding extra embaixo para não colar no fim */
+}
+
+/* Barra de Ferramentas */
+.report-toolbar {
+  width: 100%;
+  max-width: 850px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  /* Centralizar horizontalmente */
+  margin: 0 auto 20px auto; 
+  position: sticky; /* Opcional: mantêm a barra visível no topo */
+  top: 0;
+  z-index: 10;
+}
+
+.btn-back-report {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.input-group-toolbar {
+  display: flex;
+  align-items: center;
+  background: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 6px;
+  gap: 8px;
+  color: #666;
+}
+
+.input-group-toolbar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  width: 150px;
+}
+
+.btn-print-action {
+  background: var(--btn-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* --- A FOLHA A4 --- */
+.report-sheet {
+  background: white;
+  width: 100%;
+  max-width: 850px; /* Largura A4 aprox */
+  min-height: 1100px; 
+  padding: 50px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  /* Centralizar a folha */
+  margin: 0 auto; 
+  position: relative;
+}
+
+/* Header */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--btn-primary);
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.brand-title {
+  font-family: 'Kokoro', sans-serif;
+  color: var(--btn-primary);
+  margin: 0;
+  font-size: 24px;
+}
+.brand-subtitle { color: #666; font-weight: 400; }
+.report-tag {
+  background: #333; color: white;
+  font-size: 10px; padding: 2px 6px;
+  border-radius: 2px; letter-spacing: 1px;
+}
+
+.meta-data { text-align: right; font-size: 12px; color: #666; }
+.meta-item { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 4px; }
+
+/* Winner Section */
+.winner-highlight-section {
+  background: rgba(59, 139, 214, 0.05);
+  border-left: 5px solid var(--btn-primary);
+  padding: 20px;
+  margin-bottom: 30px;
+  /* Evita quebra dentro desta seção na impressão */
+  break-inside: avoid; 
+}
+
+.winner-badge-print {
+  font-size: 11px; font-weight: 800; color: var(--btn-primary);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;
+}
+
+.winner-title { margin: 0 0 10px 0; font-size: 22px; color: #111; }
+.winner-reason { font-size: 14px; line-height: 1.5; color: #444; margin-bottom: 15px; }
+
+.winner-metrics { display: flex; gap: 30px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; }
+.metric-box { display: flex; flex-direction: column; }
+.metric-label { font-size: 11px; text-transform: uppercase; color: #666; }
+.metric-value { font-size: 18px; font-weight: 700; }
+.score-high { color: #10b981; }
+
+/* Gráficos */
+.section-heading {
+  font-size: 16px; border-bottom: 1px solid #ddd;
+  padding-bottom: 8px; margin-bottom: 15px; color: #333;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  page-break-after: avoid; /* Mantém título junto com conteúdo */
+}
+
+.chart-row {
+  display: flex; align-items: center; margin-bottom: 12px; font-size: 13px;
+  break-inside: avoid;
+}
+.chart-label { width: 35%; padding-right: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chart-bar-area { flex: 1; background: #eee; height: 12px; border-radius: 6px; overflow: hidden; }
+.chart-bar-fill { height: 100%; border-radius: 6px; }
+.chart-score { width: 40px; text-align: right; font-weight: 700; color: #555; }
+
+/* Tabela Técnica */
+.tech-table-section { margin-bottom: 30px; }
+.tech-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tech-table th { text-align: left; padding: 8px; border-bottom: 2px solid #ccc; background: #f9f9f9; }
+.tech-table td { padding: 8px; border-bottom: 1px solid #eee; }
+.col-winner { color: var(--btn-primary); }
+.col-winner-cell { background: rgba(59, 139, 214, 0.05); font-weight: 600; }
+.weight-tag { font-size: 9px; background: #eee; padding: 1px 4px; border-radius: 3px; margin-left: 5px; color: #666; }
+
+/* Notas do Analista */
+.analyst-notes-section {
+  break-inside: avoid;
+}
+.notes-textarea {
+  width: 100%; 
+  min-height: 100px; /* Altura inicial maior */
+  border: 1px dashed #ccc; 
+  background: #fafafa;
+  padding: 10px; 
+  font-family: 'Inter', sans-serif; 
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical; /* Permite redimensionar */
+  margin-bottom: 10px;
+}
+
+/* Footer */
+.report-footer { 
+  margin-top: 50px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-end; 
+  break-inside: avoid;
+}
+.signature-line { display: flex; flex-direction: column; border-top: 1px solid #333; padding-top: 8px; width: 200px; }
+.signature-line span { font-size: 10px; color: #666; }
+.system-stamp { font-size: 10px; color: #999; }
+
+/* --- MODO DE IMPRESSÃO (O Segredo) --- */
+@media print {
+  /* Esconde interface da aplicação */
+  .report-toolbar, .app-root > header, .main-grid, ::-webkit-scrollbar { display: none !important; }
+  
+  /* Reseta o container para o fluxo normal do papel */
+  .report-container-wrapper {
+    background: white; 
+    position: static; 
+    padding: 0; 
+    height: auto; 
+    overflow: visible;
+    display: block;
+  }
+  
+  .report-sheet {
+    box-shadow: none; 
+    padding: 0; 
+    margin: 0; 
+    max-width: 100%; 
+    width: 100%;
+    min-height: auto;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .notes-textarea { 
+    border: none; 
+    background: transparent; 
+    resize: none; 
+    padding: 0; 
+    min-height: auto;
+  }
+  
+  @page { margin: 1.5cm; }
+}

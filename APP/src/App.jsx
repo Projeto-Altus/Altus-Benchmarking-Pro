@@ -5,19 +5,21 @@ import ResultsDisplay from './components/ResultsDisplay/ResultsDisplay';
 import InstructionsModal from './components/InstructionsModal/InstructionsModal';
 import PasswordModal from './components/PasswordModal/PasswordModal';
 import ConfigCard from './components/ConfigCard/ConfigCard'; 
-// Importação do novo DataCard
 import DataCard from './components/DataCard/DataCard'; 
+import ReportView from './components/ReportView/ReportView'; 
 
 import { translations } from './constants/translations';
 import { useBenchmarking } from './hooks/useBenchmarking';
 import { exportConfig, importConfig } from './utils/fileHandler';
-import { hasStoredApiKey, saveApiKey, loadApiKey, removeStoredApiKey } from './utils/cryptoUtils';
+import { hasStoredApiKey, saveApiKey, loadApiKey } from './utils/cryptoUtils';
 
 function App() {
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'pt');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [showInstructions, setShowInstructions] = useState(false);
   const t = translations[lang];
+
+  const [currentScreen, setCurrentScreen] = useState('analysis');
 
   const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState(localStorage.getItem('provider') || 'google');
@@ -69,43 +71,74 @@ function App() {
     generateBenchmark({ apiKey, urls: urlList, attributes: attrWithImportance, provider, t });
   };
 
+  const handleOpenReport = () => {
+    setCurrentScreen('report');
+  };
+
   return (
     <div className="app-root">
-      <Header t={t} lang={lang} theme={theme} toggleLang={toggleLang} toggleTheme={toggleTheme} onOpenInstructions={() => setShowInstructions(true)} />
+      {currentScreen !== 'report' && (
+        <Header 
+          t={t} 
+          lang={lang} 
+          theme={theme} 
+          toggleLang={toggleLang} 
+          toggleTheme={toggleTheme} 
+          onOpenInstructions={() => setShowInstructions(true)} 
+        />
+      )}
 
-      <main className="main-grid">
+      <main className={currentScreen === 'report' ? '' : 'main-grid'}>
         
-        {/* CARD 1: CONFIGURAÇÃO */}
-        <ConfigCard 
-          t={t}
-          loading={loading}
-          provider={provider}
-          setProvider={setProvider}
-          apiKey={apiKey}
-          setApiKey={setApiKey}
-          showApiKeyPassword={showApiKeyPassword}
-          setShowApiKeyPassword={setShowApiKeyPassword}
-          hasStoredKey={hasStoredKey}
-          onSaveKey={handleSaveApiKey}
-          onLoadKey={handleLoadApiKey}
-        />
+        {currentScreen === 'report' ? (
+          <ReportView 
+            results={results}
+            attributes={attrWithImportance}
+            onBack={() => setCurrentScreen('analysis')}
+            t={t}
+          />
+        ) : (
+          <>
+            <ConfigCard 
+              t={t}
+              loading={loading}
+              provider={provider}
+              setProvider={setProvider}
+              apiKey={apiKey}
+              setApiKey={setApiKey}
+              showApiKeyPassword={showApiKeyPassword}
+              setShowApiKeyPassword={setShowApiKeyPassword}
+              hasStoredKey={hasStoredKey}
+              onSaveKey={handleSaveApiKey}
+              onLoadKey={handleLoadApiKey}
+            />
 
-        {/* CARD 2: DADOS (NOVO COMPONENTE) */}
-        <DataCard 
-          t={t}
-          loading={loading}
-          lang={lang}
-          urlList={urlList}
-          setUrlList={setUrlList}
-          attrWithImportance={attrWithImportance}
-          setAttrWithImportance={setAttrWithImportance}
-          onImport={handleImport}
-          onExport={handleExport}
-          onGenerate={handleGenerate}
-          apiKey={apiKey}
-        />
+            <DataCard 
+              t={t}
+              loading={loading}
+              lang={lang}
+              urlList={urlList}
+              setUrlList={setUrlList}
+              attrWithImportance={attrWithImportance}
+              setAttrWithImportance={setAttrWithImportance}
+              onImport={handleImport}
+              onExport={handleExport}
+              onGenerate={handleGenerate}
+              apiKey={apiKey}
+            />
 
-        <ResultsDisplay results={results} loading={loading} statusMessage={statusMessage} error={error} downloadLink={downloadLink} t={t} attributes={attrWithImportance} />
+            <ResultsDisplay 
+              results={results} 
+              loading={loading} 
+              statusMessage={statusMessage} 
+              error={error} 
+              downloadLink={downloadLink} 
+              t={t} 
+              attributes={attrWithImportance}
+              onGenerateReport={handleOpenReport} 
+            />
+          </>
+        )}
       
       </main>
 
