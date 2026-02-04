@@ -59,7 +59,7 @@ export const useBenchmarking = () => {
 
   return {
     generateBenchmark,
-    clearResults,
+    clearResults, 
     results,
     downloadLink,
     loading,

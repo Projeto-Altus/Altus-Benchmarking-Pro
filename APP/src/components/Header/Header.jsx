@@ -1,28 +1,42 @@
-import React, { useState } from 'react';
-import { BookOpen, Globe, Sun, Moon, ChevronDown } from 'lucide-react';
+import React from 'react';
+import { BookOpen, Globe, Sun, Moon, ArrowLeft } from 'lucide-react';
 import './Header.css';
 import altusLogo from '../../assets/logo/altusLogo.png';
 
-const Header = ({ t, lang, theme, toggleLang, toggleTheme, onOpenInstructions }) => {
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
-
+const Header = ({ 
+  t, lang, theme, toggleLang, toggleTheme, onOpenInstructions,
+  showBack, onBack 
+}) => {
   return (
     <header className="nav-container">
       <div className="nav-inner">
-        {/* Lado Esquerdo: Logo e Título */}
+        
+        {/* Lado Esquerdo */}
         <div className="nav-left">
+          
+          {/* BOTÃO VOLTAR (Estilo Ícone de Navegação) */}
+          {showBack && (
+            <button className="nav-back-icon" onClick={onBack} title="Voltar ao Dashboard">
+              <ArrowLeft size={24} />
+            </button>
+          )}
+
           <div className="logo-wrapper">
             <img src={altusLogo} alt="Altus Logo" className="logo-img" />
           </div>
+          
+          {/* Divisor visual apenas se não tiver o botão de voltar para não poluir, 
+              ou mantemos sempre se preferir a consistência do logo */}
           <div className="brand-divider" />
+          
           <h1 className="app-headline">Benchmarking <span className="highlight">Pro</span></h1>
         </div>
 
-        {/* Lado Direito: Ações */}
+        {/* Lado Direito */}
         <div className="nav-right">
           <button className="nav-action-btn" onClick={onOpenInstructions} title={t.instructions}>
             <BookOpen size={20} />
-            <span className="btn-label">Guia de Uso</span>
+            <span className="btn-label">{t.guide?.title ? 'Guia' : 'Guide'}</span>
           </button>
 
           <div className="vertical-divider" />

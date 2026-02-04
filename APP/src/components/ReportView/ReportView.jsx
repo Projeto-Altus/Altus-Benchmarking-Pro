@@ -3,7 +3,9 @@ import { ArrowLeft, Printer, Download, Calendar, User, FileText, CheckCircle } f
 import './ReportView.css';
 
 const ReportView = ({ results, attributes, onBack, t }) => {
-  const [analystName, setAnalystName] = useState('Equipe de Compras');
+  const [analystName, setAnalystName] = useState(
+    localStorage.getItem('altus_username') || 'Equipe de Compras'
+  );
   const [notes, setNotes] = useState('Com base na análise técnica e nos pesos atribuídos, o produto vencedor apresenta o melhor equilíbrio entre custo e benefício para o cenário atual da empresa.');
   
   const sortedResults = [...results].sort((a, b) => b.pontuacao_final - a.pontuacao_final);

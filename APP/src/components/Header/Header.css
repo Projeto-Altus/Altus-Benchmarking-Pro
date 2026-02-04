@@ -25,11 +25,34 @@
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px; /* Espaçamento fluido entre ícone e logo */
 }
 
+/* --- NOVO ESTILO CLEAN DO BOTÃO VOLTAR --- */
+.nav-back-icon {
+  background: transparent;
+  border: none;
+  /* Cor discreta em repouso (não compete com o logo) */
+  color: rgba(255, 255, 255, 0.6); 
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%; /* Feedback circular ao passar o mouse */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-right: 4px; /* Afasta um pouco do logo */
+}
+
+.nav-back-icon:hover {
+  color: #ffffff; /* Fica branco total */
+  background: rgba(255, 255, 255, 0.1); /* Fundo sutil */
+  transform: translateX(-3px); /* Animação de "voltar" */
+}
+/* ----------------------------------------- */
+
 .logo-wrapper {
-  height: 48px; /* Aumentado de 35px para dar mais destaque ao logo */
+  height: 48px;
   display: flex;
   align-items: center;
   padding: 4px 8px;
@@ -46,6 +69,7 @@
   width: 1px;
   height: 24px;
   background: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
 }
 
 .app-headline {
