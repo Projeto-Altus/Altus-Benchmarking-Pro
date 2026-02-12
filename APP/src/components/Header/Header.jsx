@@ -1,11 +1,22 @@
 import React from 'react';
-import { BookOpen, Globe, Sun, Moon, ArrowLeft } from 'lucide-react';
+import { 
+  BookOpen, 
+  Globe, 
+  Sun, 
+  Moon, 
+  ArrowLeft, 
+  Bell, 
+  BellOff, 
+  Volume2, 
+  VolumeX 
+} from 'lucide-react';
 import './Header.css';
 import altusLogo from '../../assets/logo/altusLogo.png';
 
 const Header = ({ 
   t, lang, theme, toggleLang, toggleTheme, onOpenInstructions,
-  showBack, onBack 
+  showBack, onBack, soundEnabled, onToggleSound, 
+  notificationStatus, onRequestNotification 
 }) => {
   return (
     <header className="nav-container">
@@ -28,6 +39,28 @@ const Header = ({
         </div>
 
         <div className="nav-right">
+          <button 
+            className="nav-icon-btn" 
+            onClick={onToggleSound} 
+            title={soundEnabled ? 'Mudar para mudo' : 'Ativar som'}
+          >
+            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} className="icon-disabled" />}
+          </button>
+
+          <button 
+            className="nav-icon-btn" 
+            onClick={onRequestNotification} 
+            title={notificationStatus === 'granted' ? t.notificationsTitle : 'Ativar notificações'}
+          >
+            {notificationStatus === 'granted' ? (
+              <Bell size={20} />
+            ) : (
+              <BellOff size={20} className="icon-disabled" />
+            )}
+          </button>
+
+          <div className="vertical-divider" />
+
           <button className="nav-action-btn" onClick={onOpenInstructions} title={t.instructions}>
             <BookOpen size={20} />
             <span className="btn-label">{t.guideBtn}</span>

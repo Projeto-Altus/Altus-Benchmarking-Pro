@@ -102,3 +102,47 @@ select.input-field {
   html, body, #root { height: auto; overflow: auto; }
   .main-grid { display: flex; flex-direction: column; height: auto; padding: 20px; }
 }
+
+.config-sidebar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 280px;
+}
+
+.btn-sidebar-reset {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--input-border);
+  color: var(--card-text);
+  border-radius: 8px;
+  font-family: 'Kokoro', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.btn-sidebar-reset:hover {
+  border-color: var(--btn-primary);
+  color: var(--btn-primary);
+  background: rgba(59, 139, 214, 0.05);
+  transform: translateY(-1px);
+}
+
+.btn-sidebar-reset:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
