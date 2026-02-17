@@ -32,7 +32,7 @@ const notifyUser = (t) => {
     });
   }
 };
-
+ 
 function App() {
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'pt');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
