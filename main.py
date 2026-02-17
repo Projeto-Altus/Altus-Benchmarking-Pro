@@ -3,9 +3,12 @@ import os
 import sys
 import threading
 import asyncio
+import ctypes
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    myappid = 'Altus.Benchmarking.Pro.v1'
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 if getattr(sys, 'frozen', False):
     os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(sys._MEIPASS, 'playwright', 'driver', 'package', '.local-browsers')
@@ -18,17 +21,11 @@ WEB_FOLDER = resource_path('APP/dist')
 sys.path.append(resource_path('.'))
 sys.path.append(resource_path('API'))
 
-try:
-    from API.app import create_app
-except Exception as e:
-    sys.exit(1)
+from API.app import create_app
 
 def run_flask():
     app = create_app()
     app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
-
-def on_close(page, sockets):
-    os._exit(0)
 
 threading.Thread(target=run_flask, daemon=True).start()
 
@@ -42,8 +39,6 @@ if __name__ == '__main__':
         cmdline_args=[
             '--start-maximized', 
             '--app=http://localhost:54321/index.html', 
-            '--new-window', 
             '--disable-extensions'
-        ],
-        close_callback=on_close
+        ]
     )

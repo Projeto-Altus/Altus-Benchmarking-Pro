@@ -12,24 +12,19 @@ import ReportView from './components/ReportView/ReportView';
 import Dashboard from './components/Dashboard/Dashboard';
 import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
 
-import notificationSound from './assets/sfx/notification.mp3';
-
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, BellRing } from 'lucide-react';
+import { Toaster, toast } from 'react-hot-toast';
 import { translations } from './constants/translations';
 import { useBenchmarking } from './hooks/useBenchmarking';
 import { exportConfig, importConfig } from './utils/fileHandler';
 import { hasStoredApiKey, saveApiKey, loadApiKey } from './utils/cryptoUtils';
 import { saveBenchmarkToHistory } from './utils/historyHandler';
 
-const notifyUser = (t) => {
-  if (document.visibilityState === 'visible') return;
-  if (!("Notification" in window)) return;
-  if (Notification.permission === "granted") {
-    new Notification("Altus Benchmarking", {
-      body: t.analysisReady,
-      icon: "/favicon.ico",
-      silent: false
-    });
+const triggerNativeNotification = async () => {
+  try {
+    await fetch('http://localhost:5000/api/notify', { method: 'POST' });
+  } catch (err) {
+    console.error("Erro ao disparar notificação nativa", err);
   }
 };
  
@@ -49,7 +44,6 @@ function App() {
   const [urlList, setUrlList] = useState([]);
   const [attrWithImportance, setAttrWithImportance] = useState([]);
   const [displayResults, setDisplayResults] = useState([]);
-  const [soundEnabled, setSoundEnabled] = useState(localStorage.getItem('altus_sound') !== 'false');
   
   const [hasStoredKey, setHasStoredKey] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -81,10 +75,6 @@ function App() {
   }, [provider]);
 
   useEffect(() => {
-    localStorage.setItem('altus_sound', soundEnabled);
-  }, [soundEnabled]);
-
-  useEffect(() => {
     setHasStoredKey(hasStoredApiKey());
   }, []);
 
@@ -97,9 +87,8 @@ function App() {
 
   useEffect(() => {
     if (!loading && displayResults.length > 0) {
-      notifyUser(t);
-      if (soundEnabled) {
-        new Audio(notificationSound).play().catch(() => {});
+      if (document.visibilityState !== 'visible' && notificationStatus === 'granted') {
+        triggerNativeNotification();
       }
       
       const originalTitle = document.title;
@@ -110,7 +99,7 @@ function App() {
       };
       window.addEventListener('focus', resetTitle);
     }
-  }, [loading, displayResults, t, soundEnabled]);
+  }, [loading, displayResults, t, notificationStatus]);
 
   useEffect(() => {
     if (hookResults && hookResults.length > 0 && urlList.length > 0 && attrWithImportance.length > 0) {
@@ -133,22 +122,32 @@ function App() {
           results: hookResults 
         }
       });
+      
+      toast.success(t.analysisReady, { duration: 4000 });
     }
-  }, [hookResults, urlList, attrWithImportance]);
+  }, [hookResults, urlList, attrWithImportance, t]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleRequestPermission = async () => {
     setShowNotifyModal(false);
     if ("Notification" in window) {
       const permission = await Notification.requestPermission();
       setNotificationStatus(permission);
+      if (permission === 'granted') toast.success(t.toasts.notificationsActive);
+      else toast.error(t.toasts.permissionDenied);
     }
   };
 
   const handleHeaderNotifyClick = () => {
     if (notificationStatus === 'granted') {
-      alert(t.notificationsRevoke);
+      toast(t.toasts.notificationsRevoke, { icon: 'ℹ️' });
     } else if (notificationStatus === 'denied') {
-      alert(t.notificationsBlocked);
+      toast.error(t.toasts.notificationsBlocked);
     } else {
       setShowNotifyModal(true);
     }
@@ -158,6 +157,7 @@ function App() {
     setUserName(name);
     localStorage.setItem('altus_username', name);
     setCurrentView('dashboard');
+    toast.success(`${t.toasts.welcomeUser}${name}!`);
   };
 
   const handleNewAnalysis = () => {
@@ -179,15 +179,29 @@ function App() {
       setAttrWithImportance(data.attrWithImportance || []);
       setDisplayResults(data.results || []);
       setCurrentView('analysis');
+      toast.success(t.toasts.historyLoaded);
     }
   };
 
-  const toggleLang = () => setLang(prev => prev === 'pt' ? 'en' : 'pt');
+  const toggleLang = () => {
+    const newLang = lang === 'pt' ? 'en' : 'pt';
+    setLang(newLang);
+  };
+  
+  useEffect(() => {
+      const isInitial = !localStorage.getItem('lang_init');
+      if (isInitial) {
+          localStorage.setItem('lang_init', 'true');
+      } else {
+          toast.success(`${t.toasts.langChanged}${lang.toUpperCase()}`);
+      }
+  }, [lang, t]);
+
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   const handleSaveApiKey = () => {
     if (!apiKey.trim()) {
-      alert(t.passwordModal?.errorEmpty || 'Digite uma API Key');
+      toast.error(t.passwordModal?.errorEmpty || 'Digite uma API Key');
       return;
     }
     setPasswordModalMode('save');
@@ -205,10 +219,12 @@ function App() {
       if (passwordModalMode === 'save') {
         await saveApiKey(apiKey, password);
         setHasStoredKey(true);
+        toast.success(t.toasts.apiKeySaved);
       } else if (passwordModalMode === 'load') {
         const decryptedKey = await loadApiKey(password);
         if (decryptedKey) {
           setApiKey(decryptedKey);
+          toast.success(t.toasts.apiKeyLoaded);
         } else {
           throw new Error('Falha ao descriptografar');
         }
@@ -216,15 +232,16 @@ function App() {
       setShowPasswordModal(false);
     } catch (error) {
       console.error(error);
-      alert(t.passwordModal?.errorGeneric || 'Erro na senha');
+      toast.error(t.toasts.passwordError);
     } finally {
       setPasswordLoading(false);
     }
   };
 
   const handleExport = () => {
-    if (urlList.length === 0) return alert('Configure antes de exportar');
+    if (urlList.length === 0) return toast.error(t.toasts.configureBeforeExport);
     exportConfig(urlList, attrWithImportance);
+    toast.success(t.toasts.configExported);
   };
 
   const handleImport = async () => {
@@ -234,12 +251,17 @@ function App() {
       const config = await importConfig();
       if (config.urls) setUrlList(config.urls);
       if (config.attributes) setAttrWithImportance(config.attributes);
+      toast.success(t.toasts.dataImported);
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
   const handleGenerate = () => {
+    if(urlList.length === 0 || attrWithImportance.length === 0) {
+        toast.error(t.toasts.missingData);
+        return;
+    }
     generateBenchmark({ 
       apiKey, 
       urls: urlList, 
@@ -255,6 +277,17 @@ function App() {
 
   return (
     <div className="app-root">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: 'var(--card-bg)',
+            color: 'var(--card-text)',
+            border: '1px solid var(--input-border)'
+          },
+        }}
+      />
+
       <Header 
         t={t} 
         lang={lang} 
@@ -264,8 +297,6 @@ function App() {
         onOpenInstructions={() => setShowInstructions(true)}
         showBack={currentView !== 'dashboard'} 
         onBack={handleBackToDashboard} 
-        soundEnabled={soundEnabled}
-        onToggleSound={() => setSoundEnabled(!soundEnabled)}
         notificationStatus={notificationStatus}
         onRequestNotification={handleHeaderNotifyClick}
       />
@@ -296,12 +327,20 @@ function App() {
                 onSaveKey={handleSaveApiKey}
                 onLoadKey={handleLoadApiKey}
               />
-              {displayResults.length > 0 && !loading && (
-                <button className="btn-sidebar-reset" onClick={handleNewAnalysis}>
-                  <RotateCcw size={16} /> 
-                  {t.newAnalysis}
+              
+              <div className="sidebar-actions">
+                <button className="btn-sidebar-test" onClick={triggerNativeNotification}>
+                  <BellRing size={16} />
+                  Testar Notificação
                 </button>
-              )}
+
+                {displayResults.length > 0 && !loading && (
+                  <button className="btn-sidebar-reset" onClick={handleNewAnalysis}>
+                    <RotateCcw size={16} /> 
+                    {t.newAnalysis}
+                  </button>
+                )}
+              </div>
             </div>
 
             <DataCard 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, X, Link as LinkIcon, Trash2, AlertCircle, Link2Off } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import './UrlManager.css';
 
 const UrlManager = ({ urls, setUrls, loading, t }) => {
@@ -20,13 +21,15 @@ const UrlManager = ({ urls, setUrls, loading, t }) => {
       return;
     }
     if (urls.includes(trimmedInput)) {
-      setError(t.urlExists); 
+      toast.error(t.toasts.urlExists); 
+      setError('');
       return;
     }
 
     setUrls([...urls, trimmedInput]);
     setInput('');
     setError('');
+    toast.success(t.toasts.urlAdded); 
   };
 
   const handleInputChange = (e) => {
@@ -34,8 +37,17 @@ const UrlManager = ({ urls, setUrls, loading, t }) => {
     if (error) setError('');
   };
 
-  const removeUrl = (index) => setUrls(urls.filter((_, i) => i !== index));
-  const clearUrls = () => setUrls([]);
+  const removeUrl = (index) => {
+      setUrls(urls.filter((_, i) => i !== index));
+      toast.success(t.toasts.urlRemoved); 
+  };
+  
+  const clearUrls = () => {
+      if(confirm(t.toasts.confirmClear)) {
+          setUrls([]);
+          toast.success(t.toasts.listCleared); 
+      }
+  };
 
   return (
     <div className="url-section">
