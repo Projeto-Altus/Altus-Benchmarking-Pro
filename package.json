@@ -1,17 +1,23 @@
 {
   "name": "altus-benchmarking-pro",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "index.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
   },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8"
+  },
   "build": {
     "appId": "com.altus.benchmarking",
     "productName": "Altus Benchmarking Pro",
     "directories": {
-      "output": "dist_electron",
-      "app": "."
+      "output": "dist_electron"
     },
     "files": [
       "index.js",
