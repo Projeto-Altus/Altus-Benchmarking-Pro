@@ -329,11 +329,6 @@ function App() {
               />
               
               <div className="sidebar-actions">
-                <button className="btn-sidebar-test" onClick={triggerNativeNotification}>
-                  <BellRing size={16} />
-                  Testar Notificação
-                </button>
-
                 {displayResults.length > 0 && !loading && (
                   <button className="btn-sidebar-reset" onClick={handleNewAnalysis}>
                     <RotateCcw size={16} /> 
