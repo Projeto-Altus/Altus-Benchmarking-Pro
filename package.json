@@ -17,7 +17,8 @@
     "appId": "com.altus.benchmarking",
     "productName": "Altus Benchmarking Pro",
     "directories": {
-      "output": "dist_electron"
+      "output": "dist_electron",
+      "app": "."
     },
     "files": [
       "index.js",
