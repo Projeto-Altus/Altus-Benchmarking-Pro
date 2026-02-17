@@ -35,14 +35,9 @@
       "shortcutName": "Altus Benchmarking Pro"
     },
     "extraResources": [
-      {
-        "from": "resources/backend/api_backend.exe",
-        "to": "backend/api_backend.exe"
-      },
-      {
-        "from": "assets",
-        "to": "assets"
-      }
+      { "from": "resources/backend/api_backend.exe", "to": "backend/api_backend.exe" },
+      { "from": "assets", "to": "assets" },
+      { "from": "resources/playwright", "to": "playwright" }
     ]
   }
 }

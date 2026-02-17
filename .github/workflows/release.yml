@@ -50,7 +50,10 @@ jobs:
         pip install pyinstaller
 
     - name: Install Playwright Browsers
-      run: python -m playwright install chromium
+      run: |
+        mkdir -p resources/playwright
+        $env:PLAYWRIGHT_BROWSERS_PATH="resources/playwright"
+        python -m playwright install chromium
 
     - name: Build Python Sidecar EXE
       run: |

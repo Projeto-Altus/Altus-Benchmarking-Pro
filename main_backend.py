@@ -1,11 +1,11 @@
 import os
 import sys
-from API.app import create_app
 
-sys.path.append(os.path.abspath("."))
-sys.path.append(os.path.abspath("API"))
+if getattr(sys, 'frozen', False):
+    base_path = os.path.dirname(sys.executable)
+    playwright_path = os.path.join(base_path, "..", "..", "playwright")
+else:
+    playwright_path = None 
 
-app = create_app()
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
+if playwright_path:
+    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = playwright_path
