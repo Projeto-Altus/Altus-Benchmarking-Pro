@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import ResultsDisplay from './components/ResultsDisplay/ResultsDisplay';
@@ -18,8 +18,12 @@ import { saveBenchmarkToHistory } from './utils/historyHandler';
 
 function App() {
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'pt');
+<<<<<<< Updated upstream
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [showInstructions, setShowInstructions] = useState(false);
+=======
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+>>>>>>> Stashed changes
   const t = translations[lang];
 
   const [userName, setUserName] = useState(localStorage.getItem('altus_username') || '');
@@ -38,12 +42,81 @@ function App() {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [showApiKeyPassword, setShowApiKeyPassword] = useState(false);
 
+<<<<<<< Updated upstream
   const { generateBenchmark, results: hookResults, loading, error, statusMessage, downloadLink, clearResults } = useBenchmarking();
 
   useEffect(() => { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); }, [theme]);
   useEffect(() => { localStorage.setItem('lang', lang); }, [lang]);
   useEffect(() => { localStorage.setItem('provider', provider); }, [provider]);
   useEffect(() => { setHasStoredKey(hasStoredApiKey()); }, []);
+=======
+  const hasNotifiedRef = useRef(false);
+
+  const { 
+    generateBenchmark, 
+    results: hookResults, 
+    loading, 
+    error, 
+    statusMessage, 
+    downloadLink, 
+    clearResults 
+  } = useBenchmarking();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('lang', lang);
+  }, [lang]);
+
+  useEffect(() => {
+    localStorage.setItem('provider', provider);
+  }, [provider]);
+
+  useEffect(() => {
+    localStorage.setItem('altus_sound', soundEnabled);
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    setHasStoredKey(hasStoredApiKey());
+  }, []);
+
+  useEffect(() => {
+    if (currentView === 'dashboard' && notificationStatus === 'default') {
+      const timer = setTimeout(() => setShowNotifyModal(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentView, notificationStatus]);
+
+  useEffect(() => {
+    const resetTitle = () => {
+      document.title = t.title;
+    };
+    
+    resetTitle(); 
+    window.addEventListener('focus', resetTitle);
+    return () => window.removeEventListener('focus', resetTitle);
+  }, [currentView, t]);
+
+  useEffect(() => {
+    if (loading) {
+      hasNotifiedRef.current = false;
+      return;
+    }
+
+    if (!loading && hookResults && hookResults.length > 0 && !hasNotifiedRef.current) {
+      notifyUser(t);
+      if (soundEnabled) {
+        new Audio(notificationSound).play().catch(() => {});
+      }
+      
+      hasNotifiedRef.current = true; 
+      document.title = `✅ ${t.analysisReady}`;
+    }
+  }, [loading, hookResults, t, soundEnabled]);
+>>>>>>> Stashed changes
 
   useEffect(() => {
     if (hookResults && hookResults.length > 0 && urlList.length > 0 && attrWithImportance.length > 0) {
@@ -69,6 +142,7 @@ function App() {
   const handleLoadHistory = (historyItem) => {
     const data = historyItem.fullData;
     if (data) {
+      hasNotifiedRef.current = true; 
       setUrlList(data.urlList || []);
       setAttrWithImportance(data.attrWithImportance || []);
       setDisplayResults(data.results || []); 
@@ -105,8 +179,25 @@ function App() {
     } 
   };
 
+<<<<<<< Updated upstream
   const handleGenerate = () => { generateBenchmark({ apiKey, urls: urlList, attributes: attrWithImportance, provider, t }); };
   const handleOpenReport = () => { setCurrentScreen('report'); };
+=======
+  const handleGenerate = () => {
+    hasNotifiedRef.current = false; // Resetamos a trava para a nova análise da API
+    generateBenchmark({ 
+      apiKey, 
+      urls: urlList, 
+      attributes: attrWithImportance, 
+      provider, 
+      t 
+    });
+  };
+
+  if (currentView === 'welcome') {
+    return <WelcomeScreen onComplete={handleWelcomeComplete} />;
+  }
+>>>>>>> Stashed changes
 
   return (
     <div className="app-root">

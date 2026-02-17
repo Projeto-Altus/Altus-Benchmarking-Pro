@@ -33,8 +33,12 @@ body { font-family: 'Inria Sans', system-ui, sans-serif; background: var(--bg-bo
   gap: 24px; 
   
   justify-content: center; 
+<<<<<<< Updated upstream
   padding-right: 344px; 
 
+=======
+  padding: 10px 20px 20px 20px; 
+>>>>>>> Stashed changes
   width: 100%; 
   height: calc(100vh - 70px); 
   margin: 10px 0 0 0; 

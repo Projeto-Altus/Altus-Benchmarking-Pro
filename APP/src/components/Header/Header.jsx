@@ -34,6 +34,10 @@ const Header = ({
 
         {/* Lado Direito */}
         <div className="nav-right">
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
           <button className="nav-action-btn" onClick={onOpenInstructions} title={t.instructions}>
             <BookOpen size={20} />
             <span className="btn-label">{t.guide?.title ? 'Guia' : 'Guide'}</span>
@@ -50,6 +54,28 @@ const Header = ({
 
           <button className="nav-icon-btn theme-switcher" onClick={toggleTheme}>
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+
+          <div className="brand-divider" />
+
+          <button 
+            className="nav-icon-btn" 
+            onClick={onRequestNotification} 
+            title={notificationStatus === 'granted' ? t.notificationsTitle : 'Ativar notificações'}
+          >
+            {notificationStatus === 'granted' ? (
+              <Bell size={20} />
+            ) : (
+              <BellOff size={20} className="icon-disabled" />
+            )}
+          </button>
+
+          <button 
+            className="nav-icon-btn" 
+            onClick={onToggleSound} 
+            title={soundEnabled ? 'Mudar para mudo' : 'Ativar som'}
+          >
+            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} className="icon-disabled" />}
           </button>
         </div>
       </div>
